@@ -1,0 +1,16 @@
+<launch>
+  <node pkg="stage" type="stageros" name="stageros" args="$(find pteam_p2os)/world/pal1.world" >
+    <param name="scan_topic" value="/robot_0/base_scan" />
+  </node>
+  <node pkg="pteam_p2os" type="sensing_node" name="sensing_node" >
+    <param name="scan_topic" value="/robot_0/base_scan" />
+    <param name="processed_ls_topic" value="/robot_0/processed_ls" />
+  </node>
+  <node pkg="pteam_p2os" type="behaviors_node" name="behaviors_node" >
+    <param name="processed_ls_topic" value="/robot_0/processed_ls" />
+    <param name="robot_control_service" value="/robot_0/robot_control_service" />
+  </node>
+  <node pkg="pteam_p2os" type="control_node" name="control_node" >
+    <param name="robot_control_service" value="/robot_0/robot_control_service" />
+  </node>
+</launch>

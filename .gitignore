@@ -1,0 +1,6 @@
+# ignored file #
+*.kdev*
+bin/*
+build/*
+lib/*
+*~

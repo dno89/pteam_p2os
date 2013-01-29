@@ -1,0 +1,23 @@
+<package>
+  <description brief="pteam_p2os">
+
+     pteam_p2os
+
+  </description>
+  <author>dano</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pteam_p2os</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <!-- The following dependencies are required outside of simulation -->
+  <depend package="LMS1xx"/>
+  <!-- <depend package="p2os_driver"/> -->
+  <!-- <depend package="p2os_dashboard"/> -->
+
+</package>
+
+
