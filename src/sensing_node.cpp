@@ -14,7 +14,7 @@
 #include "base/DMDebug.h"
 // #include "base/Common.h"
 
-CREATE_DEBUG_LOG("/tmp/pteam-sensing_node.log",)
+CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-sensing_node.log")
 
 ///TODO: definire il formato del messaggio ProcessedLS nel file msg/ProcessedLS.msg! Consultare la wiki per i tipi disponibili!
 
@@ -85,7 +85,7 @@ public:
 		///TODO: inserire qua il codice per processare scan_msg e riempire pls
 		
 // 		std::copy(scan_msg.ranges.begin(), scan_msg.ranges.end(), std::ostream_iterator<float>(std::cout, ", "));
-		pls.data = "Dolan, r u tryin to cheat me?\nGoofy pls!";
+		pls.data = scan_msg;
 		
 		//ok, done? then publish a new message
 		

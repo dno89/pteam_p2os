@@ -15,6 +15,7 @@
 #include "ros/assert.h"
 
 #include "std_msgs/Header.h"
+#include "sensor_msgs/LaserScan.h"
 
 namespace pteam_p2os
 {
@@ -37,8 +38,8 @@ struct ProcessedLS_ {
   typedef  ::std_msgs::Header_<ContainerAllocator>  _header_type;
    ::std_msgs::Header_<ContainerAllocator>  header;
 
-  typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _data_type;
-  std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  data;
+  typedef  ::sensor_msgs::LaserScan_<ContainerAllocator>  _data_type;
+   ::sensor_msgs::LaserScan_<ContainerAllocator>  data;
 
 
   typedef boost::shared_ptr< ::pteam_p2os::ProcessedLS_<ContainerAllocator> > Ptr;
@@ -69,12 +70,12 @@ template<class ContainerAllocator>
 struct MD5Sum< ::pteam_p2os::ProcessedLS_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "c99a9440709e4d4a9716d55b8270d5e7";
+    return "2061fba751b50e7a91d1c4c774250599";
   }
 
   static const char* value(const  ::pteam_p2os::ProcessedLS_<ContainerAllocator> &) { return value(); } 
-  static const uint64_t static_value1 = 0xc99a9440709e4d4aULL;
-  static const uint64_t static_value2 = 0x9716d55b8270d5e7ULL;
+  static const uint64_t static_value1 = 0x2061fba751b50e7aULL;
+  static const uint64_t static_value2 = 0x91d1c4c774250599ULL;
 };
 
 template<class ContainerAllocator>
@@ -92,7 +93,7 @@ struct Definition< ::pteam_p2os::ProcessedLS_<ContainerAllocator> > {
   static const char* value() 
   {
     return "Header header\n\
-string data\n\
+sensor_msgs/LaserScan data\n\
 \n\
 ================================================================================\n\
 MSG: std_msgs/Header\n\
@@ -111,6 +112,38 @@ time stamp\n\
 # 0: no frame\n\
 # 1: global frame\n\
 string frame_id\n\
+\n\
+================================================================================\n\
+MSG: sensor_msgs/LaserScan\n\
+# Single scan from a planar laser range-finder\n\
+#\n\
+# If you have another ranging device with different behavior (e.g. a sonar\n\
+# array), please find or create a different message, since applications\n\
+# will make fairly laser-specific assumptions about this data\n\
+\n\
+Header header            # timestamp in the header is the acquisition time of \n\
+                         # the first ray in the scan.\n\
+                         #\n\
+                         # in frame frame_id, angles are measured around \n\
+                         # the positive Z axis (counterclockwise, if Z is up)\n\
+                         # with zero angle being forward along the x axis\n\
+                         \n\
+float32 angle_min        # start angle of the scan [rad]\n\
+float32 angle_max        # end angle of the scan [rad]\n\
+float32 angle_increment  # angular distance between measurements [rad]\n\
+\n\
+float32 time_increment   # time between measurements [seconds] - if your scanner\n\
+                         # is moving, this will be used in interpolating position\n\
+                         # of 3d points\n\
+float32 scan_time        # time between scans [seconds]\n\
+\n\
+float32 range_min        # minimum range value [m]\n\
+float32 range_max        # maximum range value [m]\n\
+\n\
+float32[] ranges         # range data [m] (Note: values < range_min or > range_max should be discarded)\n\
+float32[] intensities    # intensity data [device-specific units].  If your\n\
+                         # device does not provide intensities, please leave\n\
+                         # the array empty.\n\
 \n\
 ";
   }
@@ -155,7 +188,8 @@ struct Printer< ::pteam_p2os::ProcessedLS_<ContainerAllocator> >
 s << std::endl;
     Printer< ::std_msgs::Header_<ContainerAllocator> >::stream(s, indent + "  ", v.header);
     s << indent << "data: ";
-    Printer<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > >::stream(s, indent + "  ", v.data);
+s << std::endl;
+    Printer< ::sensor_msgs::LaserScan_<ContainerAllocator> >::stream(s, indent + "  ", v.data);
   }
 };
 

@@ -8,6 +8,7 @@
 #define COMMON_H
 
 #include <stdexcept>
+#include <pteam_p2os/RobotControl.h>
 
 namespace pteam {
 
@@ -68,6 +69,20 @@ public:
 		return value;
 	}
 };
+
+/**
+ * @fn ResetRobotControlRequest
+ * @brief reset a robot control request
+ */
+
+template<typename ReqT>
+void rstRobotControlRequest(ReqT* r);
+
+template<>
+void rstRobotControlRequest<pteam_p2os::RobotControlRequest> (pteam_p2os::RobotControlRequest* r) {
+	r->angular_speed = 0.0;
+	r->linear_speed = 0.0;
+}
 
 }
 

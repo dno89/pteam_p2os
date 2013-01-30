@@ -9,6 +9,7 @@
 #define SIMPLEMERGER_H
 
 #include <pteam_p2os/RobotControl.h>
+#include <base/Common.h>
 
 namespace pteam {
 	
@@ -41,7 +42,13 @@ public:
 	 */
 	template<typename T1, typename T2, template<class, class> class ContainerT>
 	pteam_p2os::RobotControlRequest Merge(const ContainerT< ContainerT< pteam_p2os::RobotControlRequest, T1>, T2> & outputs) {
+		
+		pteam_p2os::RobotControlRequest final_output;
+		pteam::rstRobotControlRequest(&final_output);
+		
 		///TODO:
+		
+		return final_output;
 	}
 	
 	

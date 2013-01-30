@@ -4,14 +4,15 @@ python3 = True if sys.hexversion > 0x03000000 else False
 import genpy
 import struct
 
+import sensor_msgs.msg
 import std_msgs.msg
 
 class ProcessedLS(genpy.Message):
-  _md5sum = "c99a9440709e4d4a9716d55b8270d5e7"
+  _md5sum = "2061fba751b50e7a91d1c4c774250599"
   _type = "pteam_p2os/ProcessedLS"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """Header header
-string data
+sensor_msgs/LaserScan data
 
 ================================================================================
 MSG: std_msgs/Header
@@ -31,9 +32,41 @@ time stamp
 # 1: global frame
 string frame_id
 
+================================================================================
+MSG: sensor_msgs/LaserScan
+# Single scan from a planar laser range-finder
+#
+# If you have another ranging device with different behavior (e.g. a sonar
+# array), please find or create a different message, since applications
+# will make fairly laser-specific assumptions about this data
+
+Header header            # timestamp in the header is the acquisition time of 
+                         # the first ray in the scan.
+                         #
+                         # in frame frame_id, angles are measured around 
+                         # the positive Z axis (counterclockwise, if Z is up)
+                         # with zero angle being forward along the x axis
+                         
+float32 angle_min        # start angle of the scan [rad]
+float32 angle_max        # end angle of the scan [rad]
+float32 angle_increment  # angular distance between measurements [rad]
+
+float32 time_increment   # time between measurements [seconds] - if your scanner
+                         # is moving, this will be used in interpolating position
+                         # of 3d points
+float32 scan_time        # time between scans [seconds]
+
+float32 range_min        # minimum range value [m]
+float32 range_max        # maximum range value [m]
+
+float32[] ranges         # range data [m] (Note: values < range_min or > range_max should be discarded)
+float32[] intensities    # intensity data [device-specific units].  If your
+                         # device does not provide intensities, please leave
+                         # the array empty.
+
 """
   __slots__ = ['header','data']
-  _slot_types = ['std_msgs/Header','string']
+  _slot_types = ['std_msgs/Header','sensor_msgs/LaserScan']
 
   def __init__(self, *args, **kwds):
     """
@@ -55,10 +88,10 @@ string frame_id
       if self.header is None:
         self.header = std_msgs.msg.Header()
       if self.data is None:
-        self.data = ''
+        self.data = sensor_msgs.msg.LaserScan()
     else:
       self.header = std_msgs.msg.Header()
-      self.data = ''
+      self.data = sensor_msgs.msg.LaserScan()
 
   def _get_types(self):
     """
@@ -80,12 +113,24 @@ string frame_id
         _x = _x.encode('utf-8')
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self.data
+      _x = self
+      buff.write(_struct_3I.pack(_x.data.header.seq, _x.data.header.stamp.secs, _x.data.header.stamp.nsecs))
+      _x = self.data.header.frame_id
       length = len(_x)
       if python3 or type(_x) == unicode:
         _x = _x.encode('utf-8')
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
+      _x = self
+      buff.write(_struct_7f.pack(_x.data.angle_min, _x.data.angle_max, _x.data.angle_increment, _x.data.time_increment, _x.data.scan_time, _x.data.range_min, _x.data.range_max))
+      length = len(self.data.ranges)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sf'%length
+      buff.write(struct.pack(pattern, *self.data.ranges))
+      length = len(self.data.intensities)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sf'%length
+      buff.write(struct.pack(pattern, *self.data.intensities))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -97,6 +142,8 @@ string frame_id
     try:
       if self.header is None:
         self.header = std_msgs.msg.Header()
+      if self.data is None:
+        self.data = sensor_msgs.msg.LaserScan()
       end = 0
       _x = self
       start = end
@@ -111,15 +158,37 @@ string frame_id
         self.header.frame_id = str[start:end].decode('utf-8')
       else:
         self.header.frame_id = str[start:end]
+      _x = self
+      start = end
+      end += 12
+      (_x.data.header.seq, _x.data.header.stamp.secs, _x.data.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
       start = end
       end += length
       if python3:
-        self.data = str[start:end].decode('utf-8')
+        self.data.header.frame_id = str[start:end].decode('utf-8')
       else:
-        self.data = str[start:end]
+        self.data.header.frame_id = str[start:end]
+      _x = self
+      start = end
+      end += 28
+      (_x.data.angle_min, _x.data.angle_max, _x.data.angle_increment, _x.data.time_increment, _x.data.scan_time, _x.data.range_min, _x.data.range_max,) = _struct_7f.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sf'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.data.ranges = struct.unpack(pattern, str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sf'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.data.intensities = struct.unpack(pattern, str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -140,12 +209,24 @@ string frame_id
         _x = _x.encode('utf-8')
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self.data
+      _x = self
+      buff.write(_struct_3I.pack(_x.data.header.seq, _x.data.header.stamp.secs, _x.data.header.stamp.nsecs))
+      _x = self.data.header.frame_id
       length = len(_x)
       if python3 or type(_x) == unicode:
         _x = _x.encode('utf-8')
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
+      _x = self
+      buff.write(_struct_7f.pack(_x.data.angle_min, _x.data.angle_max, _x.data.angle_increment, _x.data.time_increment, _x.data.scan_time, _x.data.range_min, _x.data.range_max))
+      length = len(self.data.ranges)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sf'%length
+      buff.write(self.data.ranges.tostring())
+      length = len(self.data.intensities)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sf'%length
+      buff.write(self.data.intensities.tostring())
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -158,6 +239,8 @@ string frame_id
     try:
       if self.header is None:
         self.header = std_msgs.msg.Header()
+      if self.data is None:
+        self.data = sensor_msgs.msg.LaserScan()
       end = 0
       _x = self
       start = end
@@ -172,18 +255,41 @@ string frame_id
         self.header.frame_id = str[start:end].decode('utf-8')
       else:
         self.header.frame_id = str[start:end]
+      _x = self
+      start = end
+      end += 12
+      (_x.data.header.seq, _x.data.header.stamp.secs, _x.data.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
       start = end
       end += length
       if python3:
-        self.data = str[start:end].decode('utf-8')
+        self.data.header.frame_id = str[start:end].decode('utf-8')
       else:
-        self.data = str[start:end]
+        self.data.header.frame_id = str[start:end]
+      _x = self
+      start = end
+      end += 28
+      (_x.data.angle_min, _x.data.angle_max, _x.data.angle_increment, _x.data.time_increment, _x.data.scan_time, _x.data.range_min, _x.data.range_max,) = _struct_7f.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sf'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.data.ranges = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sf'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.data.intensities = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
+_struct_7f = struct.Struct("<7f")
 _struct_3I = struct.Struct("<3I")
