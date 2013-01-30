@@ -1,2 +1,2 @@
 Header header
-string data
+sensor_msgs/LaserScan data

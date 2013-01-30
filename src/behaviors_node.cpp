@@ -18,7 +18,7 @@
 // #include <base/OutputMerger.h>
 // #include "base/Common.h"
 
-CREATE_DEBUG_LOG("/tmp/behaviors_node.log",)
+CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behaviors_node.log")
 
 ///TODO: definire il tipo per la richiesta al robot control server nel file srv/RobotControl.srv
 

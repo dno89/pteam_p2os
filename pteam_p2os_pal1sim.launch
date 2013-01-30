@@ -12,5 +12,6 @@
   </node>
   <node pkg="pteam_p2os" type="control_node" name="control_node" >
     <param name="robot_control_service" value="/robot_0/robot_control_service" />
+    <param name="robot_control_topic" value="/robot_0/cmd_vel" />
   </node>
 </launch>

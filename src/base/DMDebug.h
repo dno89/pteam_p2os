@@ -31,13 +31,16 @@
  * 	CREATE OR IMPORT THE DEBUG FILE
  */
 
-#define CREATE_DEBUG_LOG(FNAME,FTOKEN)\
-std::ofstream dm_log##FTOKEN(FNAME, std::ios_base::trunc);
+#define CREATE_PRIVATE_DEBUG_LOG(FNAME)\
+static std::ofstream dm_log(FNAME, std::ios_base::trunc);
 
-#define IMPORT_DEBUG_LOG(FTOKEN)\
-extern std::ofstream dm_log##FTOKEN;
+#define CREATE_GLOBAL_DEBUG_LOG(FNAME)\
+std::ofstream dm_log(FNAME, std::ios_base::trunc);
 
-#define ACCESS_DEBUG_LOG(FTOKEN) dm_log##FTOKEN
+#define IMPORT_GLOBAL_DEBUG_LOG()\
+extern std::ofstream dm_log;
+
+#define ACCESS_DEBUG_LOG() dm_log
 
 #ifndef NDEBUG
 
