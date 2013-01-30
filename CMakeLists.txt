@@ -39,3 +39,4 @@ add_subdirectory(src/behaviors)
 add_subdirectory(src/merger)
 
 target_link_libraries(behaviors_node collision_avoidance)
+
