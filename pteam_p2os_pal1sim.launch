@@ -5,6 +5,7 @@
   <node pkg="pteam_p2os" type="sensing_node" name="sensing_node" >
     <param name="scan_topic" value="/robot_0/base_scan" />
     <param name="processed_ls_topic" value="/robot_0/processed_ls" />
+    <param name="odom_topic" value="/robot_0/odom" />
   </node>
   <node pkg="pteam_p2os" type="behaviors_node" name="behaviors_node" >
     <param name="processed_ls_topic" value="/robot_0/processed_ls" />
