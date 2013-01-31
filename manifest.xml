@@ -13,6 +13,7 @@
   <depend package="roscpp"/>
   <depend package="sensor_msgs"/>
   <depend package="geometry_msgs"/>
+  <depend package="nav_msgs"/>
   <!-- The following dependencies are required outside of simulation -->
   <depend package="LMS1xx"/>
   <!-- <depend package="p2os_driver"/> -->

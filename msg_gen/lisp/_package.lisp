@@ -3,5 +3,7 @@
   (:export
    "<PROCESSEDLS>"
    "PROCESSEDLS"
+   "<PERCEPTION>"
+   "PERCEPTION"
   ))
 

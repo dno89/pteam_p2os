@@ -5,7 +5,7 @@
 #include <boost/thread/mutex.hpp>
 
 #include <ros/ros.h>
-#include <pteam_p2os/ProcessedLS.h>
+#include <pteam_p2os/Perception.h>
 #include <pteam_p2os/RobotControl.h>
 #include <geometry_msgs/Twist.h>
 
@@ -39,9 +39,9 @@ private:
 	//the Processed Laser Scanner (PLS) subscriber
 	ros::Subscriber m_pls_sub;
 	//the last processed input
-	pteam_p2os::ProcessedLS m_pls_msg;
+	pteam_p2os::Perception m_perc_msg;
 	//mutex to read/write the message
-	boost::mutex m_pls_mutex;
+	boost::mutex m_perc_mutex;
 	//flag that indicate a new scan to process
 	bool m_new_flag;
 	
@@ -50,14 +50,14 @@ private:
 	
 	//behaviors manager
 	///TODO: tolgo il DummyMerger e ne definisco uno vero!!
-	pteam::BehaviorManager<pteam_p2os::ProcessedLS, pteam_p2os::RobotControlRequest, pteam::SimpleMerger> m_behaviors_manager;
+	pteam::BehaviorManager<pteam_p2os::Perception, pteam_p2os::RobotControlRequest, pteam::SimpleMerger> m_behaviors_manager;
 	
 	
-	void newLaserScan(const pteam_p2os::ProcessedLS& pls_msg) {
-		m_pls_mutex.lock();
-			m_pls_msg = pls_msg;
+	void newLaserScan(const pteam_p2os::Perception& pls_msg) {
+		m_perc_mutex.lock();
+			m_perc_msg = pls_msg;
 			m_new_flag = true;
-		m_pls_mutex.unlock();
+		m_perc_mutex.unlock();
 	}
 	
 public:
@@ -83,15 +83,15 @@ public:
 	
 	void ExecuteBehaviors() {
 		bool new_flag;
-		pteam_p2os::ProcessedLS pls_msg;
+		pteam_p2os::Perception perc_msg;
 		
-		m_pls_mutex.lock();
+		m_perc_mutex.lock();
 			new_flag = m_new_flag;
 			if(new_flag) {
-				pls_msg = m_pls_msg;
+				perc_msg = m_perc_msg;
 				m_new_flag = false;
 			}
-		m_pls_mutex.unlock();
+		m_perc_mutex.unlock();
 		
 		if(!new_flag) {
 			//no new data to process
@@ -101,7 +101,7 @@ public:
 		//there's a new processed input
 		pteam_p2os::RobotControl rc_server;
 		//obtain a request
-		rc_server.request = m_behaviors_manager.RunBehaviors(pls_msg);
+		rc_server.request = m_behaviors_manager.RunBehaviors(perc_msg);
 		
 		//submit the request to the server
 		if(!m_rc_client.call(rc_server)) {
