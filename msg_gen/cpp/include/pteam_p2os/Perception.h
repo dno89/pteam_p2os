@@ -270,3 +270,4 @@ s << std::endl;
 } // namespace ros
 
 #endif // PTEAM_P2OS_MESSAGE_PERCEPTION_H
+

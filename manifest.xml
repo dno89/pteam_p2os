@@ -16,6 +16,7 @@
   <depend package="nav_msgs"/>
   <!-- The following dependencies are required outside of simulation -->
   <depend package="LMS1xx"/>
+  <depend package="gripper_driver"/>
   <!-- <depend package="p2os_driver"/> -->
   <!-- <depend package="p2os_dashboard"/> -->
 
