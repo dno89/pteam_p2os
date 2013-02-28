@@ -32,7 +32,7 @@ private:
 	//the Perception subscriber
 	ros::Subscriber m_perc_sub;
 	//the Laser scanner messages
-	ros::Subscriber m_ls;
+	ros::Subscriber m_ls_sub;
 	
 	//the last processed input
 	pteam_p2os::Perception m_perc_msg;
@@ -62,12 +62,16 @@ private:
 public:
 	DebugNode(): m_nh("behaviors_node"), m_new_flag(false) {
 		std::string perception_topic;
+		std::string ls_topic;
 		
 		// Reads params from file
 		m_nh.param<std::string>("processed_ls_topic", perception_topic, "processed_ls");
-		
 		ROS_INFO("Subscribing to topic %s",perception_topic.c_str()); 
 		m_perc_sub = m_nh.subscribe(perception_topic, 1, &DebugNode::newPerception, this);
+		
+		m_nh.param<std::string>("scan_topic", ls_topic, "/robot_0/base_scan");
+		ROS_INFO("Subscribing to topic %s",ls_topic.c_str()); 
+		m_ls_sub = m_nh.subscribe(ls_topic, 1, &DebugNode::newLS, this);
 	}
 	
 	~DebugNode() { /* do nothing*/ }
@@ -91,6 +95,10 @@ public:
 			double theta = m_ls_scan.angle_min + ii*m_ls_scan.angle_increment;
 			double x = m_ls_scan.ranges[ii]*cos(theta);
 			double y = m_ls_scan.ranges[ii]*sin(theta);
+			
+			DEBUG_T(theta,)
+			DEBUG_T(x,)
+			DEBUG_T(y,)
 			
 			points.push_back(make_pair(y, x));
 		}
