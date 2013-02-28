@@ -31,7 +31,7 @@ public:
 	}
 };
 
-class BehaviorsNode {
+class DebugNode {
 private:
 	//the node handler
 	ros::NodeHandle m_nh;
@@ -61,7 +61,7 @@ private:
 	}
 	
 public:
-	BehaviorsNode(): m_nh("behaviors_node"), m_new_flag(false) {
+	DebugNode(): m_nh("behaviors_node"), m_new_flag(false) {
 		std::string processed_ls_topic;
 		std::string robot_control_service;
 		
@@ -70,7 +70,7 @@ public:
 		m_nh.param<std::string>("robot_control_service", robot_control_service, "robot_control_service");
 		
 		ROS_INFO("Subscribing to topic %s",processed_ls_topic.c_str()); 
-		m_pls_sub = m_nh.subscribe(processed_ls_topic, 1, &BehaviorsNode::newLaserScan, this);
+		m_pls_sub = m_nh.subscribe(processed_ls_topic, 1, &DebugNode::newLaserScan, this);
 		
 		
 		ROS_INFO("Using service %s",robot_control_service.c_str()); 
@@ -79,7 +79,7 @@ public:
 		///TODO: costruisco la catena dei behaviors!!!
 	}
 	
-	~BehaviorsNode() { /* do nothing*/ }
+	~DebugNode() { /* do nothing*/ }
 	
 	void ExecuteBehaviors() {
 		bool new_flag;
@@ -144,7 +144,7 @@ int main (int argc, char** argv)
 {
 	pteam::CollisionAvoidance ca;
 	ros::init (argc, argv, "behaviors_node");
-	BehaviorsNode bn;  
+	DebugNode bn;  
 	ros::Rate loop_rate(10);
 	while (ros::ok()) {
 		ros::spinOnce();

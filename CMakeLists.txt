@@ -35,6 +35,7 @@ add_definitions(-std=c++0x)
 rosbuild_add_executable(sensing_node src/sensing_node.cpp)
 rosbuild_add_executable(behaviors_node src/behaviors_node.cpp)
 rosbuild_add_executable(control_node src/control_node.cpp)
+rosbuild_add_executable(debug_node src/debug_node.cpp)
 
 include_directories(
 src/

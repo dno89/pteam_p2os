@@ -85,10 +85,9 @@ public:
 			
 			//gripper movement
 			if(!final_output.gripper_move_set) {
-				bool set = false;
 				for(auto it2 = it->begin(); it2 != it->end(); ++it2) {
 					if(it2->gripper_move_set) {
-						set = true;
+						final_output.gripper_move_set = true;;
 						final_output.gripper_move_down = it2->gripper_move_down;
 					}
 				}
