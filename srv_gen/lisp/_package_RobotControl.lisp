@@ -1,5 +1,7 @@
 (cl:in-package pteam_p2os-srv)
-(cl:export '(ANGULAR_SPEED-VAL
+(cl:export '(AFFINITY-VAL
+          AFFINITY
+          ANGULAR_SPEED-VAL
           ANGULAR_SPEED
           ANGULAR_SPEED_SET-VAL
           ANGULAR_SPEED_SET

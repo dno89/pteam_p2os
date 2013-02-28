@@ -55,7 +55,6 @@ public:
 	///WORKING
 // 	template<template<class, class> class ContainerT>
 // 	pteam_p2os::RobotControlRequest Merge(const ContainerT< ContainerT< pteam_p2os::RobotControlRequest, std::allocator<pteam_p2os::RobotControlRequest> >, std::allocator<ContainerT< pteam_p2os::RobotControlRequest, std::allocator<pteam_p2os::RobotControlRequest> > > >& outputs) {
-// 		///TODO:
 // 	}
 };
 

@@ -115,6 +115,7 @@ public:
 			}
 			
 			//gripper
+			///TODO: aggiungo i comandi del gripper
 			if(m_last_request.gripper_move_set) {
 				if(m_last_request.gripper_move_down) {
 					//move down

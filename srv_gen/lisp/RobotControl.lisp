@@ -7,7 +7,12 @@
 ;//! \htmlinclude RobotControl-request.msg.html
 
 (cl:defclass <RobotControl-request> (roslisp-msg-protocol:ros-message)
-  ((angular_speed
+  ((affinity
+    :reader affinity
+    :initarg :affinity
+    :type cl:float
+    :initform 0.0)
+   (angular_speed
     :reader angular_speed
     :initarg :angular_speed
     :type cl:float
@@ -47,6 +52,11 @@
   (cl:unless (cl:typep m 'RobotControl-request)
     (roslisp-msg-protocol:msg-deprecation-warning "using old message class name pteam_p2os-srv:<RobotControl-request> is deprecated: use pteam_p2os-srv:RobotControl-request instead.")))
 
+(cl:ensure-generic-function 'affinity-val :lambda-list '(m))
+(cl:defmethod affinity-val ((m <RobotControl-request>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader pteam_p2os-srv:affinity-val is deprecated.  Use pteam_p2os-srv:affinity instead.")
+  (affinity m))
+
 (cl:ensure-generic-function 'angular_speed-val :lambda-list '(m))
 (cl:defmethod angular_speed-val ((m <RobotControl-request>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader pteam_p2os-srv:angular_speed-val is deprecated.  Use pteam_p2os-srv:angular_speed instead.")
@@ -78,6 +88,11 @@
   (gripper_move_set m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <RobotControl-request>) ostream)
   "Serializes a message object of type '<RobotControl-request>"
+  (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'affinity))))
+    (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
   (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'angular_speed))))
     (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
@@ -95,6 +110,12 @@
 )
 (cl:defmethod roslisp-msg-protocol:deserialize ((msg <RobotControl-request>) istream)
   "Deserializes a message object of type '<RobotControl-request>"
+    (cl:let ((bits 0))
+      (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
+    (cl:setf (cl:slot-value msg 'affinity) (roslisp-utils:decode-single-float-bits bits)))
     (cl:let ((bits 0))
       (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
@@ -121,18 +142,19 @@
   "pteam_p2os/RobotControlRequest")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<RobotControl-request>)))
   "Returns md5sum for a message object of type '<RobotControl-request>"
-  "b81443d0db58f2178ec4ad98a5e09b60")
+  "3185975de18d77413b7496e7a5c4694a")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'RobotControl-request)))
   "Returns md5sum for a message object of type 'RobotControl-request"
-  "b81443d0db58f2178ec4ad98a5e09b60")
+  "3185975de18d77413b7496e7a5c4694a")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<RobotControl-request>)))
   "Returns full string definition for message of type '<RobotControl-request>"
-  (cl:format cl:nil "float32 angular_speed~%bool angular_speed_set~%float32 linear_speed~%bool linear_speed_set~%bool gripper_move_down~%bool gripper_move_set~%~%~%"))
+  (cl:format cl:nil "float32 affinity~%float32 angular_speed~%bool angular_speed_set~%float32 linear_speed~%bool linear_speed_set~%bool gripper_move_down~%bool gripper_move_set~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'RobotControl-request)))
   "Returns full string definition for message of type 'RobotControl-request"
-  (cl:format cl:nil "float32 angular_speed~%bool angular_speed_set~%float32 linear_speed~%bool linear_speed_set~%bool gripper_move_down~%bool gripper_move_set~%~%~%"))
+  (cl:format cl:nil "float32 affinity~%float32 angular_speed~%bool angular_speed_set~%float32 linear_speed~%bool linear_speed_set~%bool gripper_move_down~%bool gripper_move_set~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <RobotControl-request>))
   (cl:+ 0
+     4
      4
      1
      4
@@ -143,6 +165,7 @@
 (cl:defmethod roslisp-msg-protocol:ros-message-to-list ((msg <RobotControl-request>))
   "Converts a ROS message object to a list"
   (cl:list 'RobotControl-request
+    (cl:cons ':affinity (affinity msg))
     (cl:cons ':angular_speed (angular_speed msg))
     (cl:cons ':angular_speed_set (angular_speed_set msg))
     (cl:cons ':linear_speed (linear_speed msg))
@@ -178,10 +201,10 @@
   "pteam_p2os/RobotControlResponse")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<RobotControl-response>)))
   "Returns md5sum for a message object of type '<RobotControl-response>"
-  "b81443d0db58f2178ec4ad98a5e09b60")
+  "3185975de18d77413b7496e7a5c4694a")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'RobotControl-response)))
   "Returns md5sum for a message object of type 'RobotControl-response"
-  "b81443d0db58f2178ec4ad98a5e09b60")
+  "3185975de18d77413b7496e7a5c4694a")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<RobotControl-response>)))
   "Returns full string definition for message of type '<RobotControl-response>"
   (cl:format cl:nil "~%~%~%"))
