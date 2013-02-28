@@ -16,30 +16,16 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#simulation
-set(ON_SIMULATION OFF CACHE BOOL "Whether use or not the simulation configuration")
-
-if(ON_SIMULATION)
-	message("Simulation enabled")
-	add_definitions(-DON_SIMULATION)
-endif()
-
 #uncomment if you have defined messages
 rosbuild_genmsg()
 #uncomment if you have defined services
 rosbuild_gensrv()
 
-#C++11 standard
-add_definitions(-std=c++0x)
-
 rosbuild_add_executable(sensing_node src/sensing_node.cpp)
 rosbuild_add_executable(behaviors_node src/behaviors_node.cpp)
 rosbuild_add_executable(control_node src/control_node.cpp)
 
-include_directories(
-	src/
-	${Boost_INCLUDE_DIR}
-)
+include_directories(src/)
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
@@ -52,5 +38,9 @@ add_subdirectory(src/base)
 add_subdirectory(src/behaviors)
 add_subdirectory(src/merger)
 
+target_link_libraries(behaviors_node target_detector)
+target_link_libraries(behaviors_node take_the_ball)
 target_link_libraries(behaviors_node collision_avoidance)
+target_link_libraries(behaviors_node move_throughtward_goal)
+target_link_libraries(behaviors_node stay_in_the_middle)
 
