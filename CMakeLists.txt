@@ -20,6 +20,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 rosbuild_genmsg()
 #uncomment if you have defined services
 rosbuild_gensrv()
+add_definitions(-std=c++0x)
 
 rosbuild_add_executable(sensing_node src/sensing_node.cpp)
 rosbuild_add_executable(behaviors_node src/behaviors_node.cpp)

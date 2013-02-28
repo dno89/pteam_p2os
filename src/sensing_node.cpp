@@ -3,6 +3,7 @@
 #include <string>
 #include <iterator>
 #include <algorithm>
+#include <chrono>
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 #include <nav_msgs/Odometry.h>
@@ -15,6 +16,8 @@
 
 #include "base/DMDebug.h"
 // #include "base/Common.h"
+
+
 
 CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-sensing_node.log")
 
@@ -77,6 +80,8 @@ public:
 		
 		ROS_INFO("Advertising topic %s",processed_ls_topic.c_str()); 
 		m_processed_ls_pub = m_nh.advertise<pteam_p2os::Perception>(processed_ls_topic, 1);
+		
+		
 	}
 	
 	~SensingNode() { /* do nothing*/ }
@@ -105,6 +110,34 @@ public:
 		
 		//do some senseless shit with scan_msg and fill pls ....
 		///TODO: inserire qua il codice per processare scan_msg e riempire pls
+
+		
+		
+		/************************************************************/
+		
+#ifdef ON_SIMULATION
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();  
+		std::default_random_engine generator (seed);
+		std::normal_distribution<double>distribution(0.0, 0.01);   
+		
+		//Mi riporto al caso del robot
+		std::reverse(scan_msg.ranges.begin(),scan_msg.ranges.end());    
+		
+		//Aggiunta rumore gaussiano alle misure del simulatore
+		for (int i=0; i<scan_msg.ranges.size(); i++)
+		{
+		  scan_msg.ranges[i]=scan_msg.ranges[i]+ distribution(generator); 
+		}
+#endif	//ON_SIMULATION
+		
+		//robot
+		std::reverse(scan_msg.ranges.begin(),scan_msg.ranges.end());   
+		
+		
+		
+		
+		/************************************************************/
+		
 		
 // 		std::copy(scan_msg.ranges.begin(), scan_msg.ranges.end(), std::ostream_iterator<float>(std::cout, ", "));
 		percept.laser.data = scan_msg;
