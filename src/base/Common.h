@@ -80,8 +80,11 @@ void rstRobotControlRequest(ReqT* r);
 
 template<>
 void rstRobotControlRequest<pteam_p2os::RobotControlRequest> (pteam_p2os::RobotControlRequest* r) {
+	r->angular_speed_set = false;
 	r->angular_speed = 0.0;
+	r->linear_speed_set = false;
 	r->linear_speed = 0.0;
+	r->gripper_move_set = false;
 }
 
 }

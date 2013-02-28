@@ -26,7 +26,8 @@ struct RobotControlRequest_ {
   typedef RobotControlRequest_<ContainerAllocator> Type;
 
   RobotControlRequest_()
-  : angular_speed(0.0)
+  : affinity(0.0)
+  , angular_speed(0.0)
   , angular_speed_set(false)
   , linear_speed(0.0)
   , linear_speed_set(false)
@@ -36,7 +37,8 @@ struct RobotControlRequest_ {
   }
 
   RobotControlRequest_(const ContainerAllocator& _alloc)
-  : angular_speed(0.0)
+  : affinity(0.0)
+  , angular_speed(0.0)
   , angular_speed_set(false)
   , linear_speed(0.0)
   , linear_speed_set(false)
@@ -44,6 +46,9 @@ struct RobotControlRequest_ {
   , gripper_move_set(false)
   {
   }
+
+  typedef float _affinity_type;
+  float affinity;
 
   typedef float _angular_speed_type;
   float angular_speed;
@@ -119,12 +124,12 @@ template<class ContainerAllocator>
 struct MD5Sum< ::pteam_p2os::RobotControlRequest_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "b81443d0db58f2178ec4ad98a5e09b60";
+    return "3185975de18d77413b7496e7a5c4694a";
   }
 
   static const char* value(const  ::pteam_p2os::RobotControlRequest_<ContainerAllocator> &) { return value(); } 
-  static const uint64_t static_value1 = 0xb81443d0db58f217ULL;
-  static const uint64_t static_value2 = 0x8ec4ad98a5e09b60ULL;
+  static const uint64_t static_value1 = 0x3185975de18d7741ULL;
+  static const uint64_t static_value2 = 0x3b7496e7a5c4694aULL;
 };
 
 template<class ContainerAllocator>
@@ -141,7 +146,8 @@ template<class ContainerAllocator>
 struct Definition< ::pteam_p2os::RobotControlRequest_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "float32 angular_speed\n\
+    return "float32 affinity\n\
+float32 angular_speed\n\
 bool angular_speed_set\n\
 float32 linear_speed\n\
 bool linear_speed_set\n\
@@ -212,6 +218,7 @@ template<class ContainerAllocator> struct Serializer< ::pteam_p2os::RobotControl
 {
   template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
   {
+    stream.next(m.affinity);
     stream.next(m.angular_speed);
     stream.next(m.angular_speed_set);
     stream.next(m.linear_speed);
@@ -250,7 +257,7 @@ template<>
 struct MD5Sum<pteam_p2os::RobotControl> {
   static const char* value() 
   {
-    return "b81443d0db58f2178ec4ad98a5e09b60";
+    return "3185975de18d77413b7496e7a5c4694a";
   }
 
   static const char* value(const pteam_p2os::RobotControl&) { return value(); } 
@@ -270,7 +277,7 @@ template<class ContainerAllocator>
 struct MD5Sum<pteam_p2os::RobotControlRequest_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "b81443d0db58f2178ec4ad98a5e09b60";
+    return "3185975de18d77413b7496e7a5c4694a";
   }
 
   static const char* value(const pteam_p2os::RobotControlRequest_<ContainerAllocator> &) { return value(); } 
@@ -290,7 +297,7 @@ template<class ContainerAllocator>
 struct MD5Sum<pteam_p2os::RobotControlResponse_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "b81443d0db58f2178ec4ad98a5e09b60";
+    return "3185975de18d77413b7496e7a5c4694a";
   }
 
   static const char* value(const pteam_p2os::RobotControlResponse_<ContainerAllocator> &) { return value(); } 
