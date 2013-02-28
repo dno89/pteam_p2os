@@ -140,7 +140,7 @@ protected:
 	 */
 	template<typename T>
 	void AddProperty(const std::string& ID, const T& default_value) {
-		m_properties.insert(std::make_pair<std::string, boost::any>(ID, default_value));
+		m_properties.insert(std::make_pair(ID, boost::any(default_value)));
 	}
 	
 private:

@@ -9,7 +9,7 @@
 
 using namespace pteam;
 
-pteam_p2os::RobotControlRequest CollisionAvoidance::operator() ( const pteam_p2os::ProcessedLS& in, bool* subsume ) {
+pteam_p2os::RobotControlRequest CollisionAvoidance::operator() ( const pteam_p2os::Perception& in, bool* subsume ) {
 	///TODO:
 }
 

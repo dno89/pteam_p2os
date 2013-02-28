@@ -9,14 +9,14 @@
 #define BEHAVIORS_H
 
 #include <base/CBehavior.h>
-#include <pteam_p2os/ProcessedLS.h>
+#include <pteam_p2os/Perception.h>
 #include <pteam_p2os/RobotControl.h>
 
 namespace pteam {
 	
-class CollisionAvoidance : public CBehavior<pteam_p2os::ProcessedLS, pteam_p2os::RobotControlRequest> {
+class CollisionAvoidance : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {
 public:
-        virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::ProcessedLS& in, bool* subsume = 0 );
+        virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );
         virtual ~CollisionAvoidance();
 };
 

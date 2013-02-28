@@ -27,6 +27,10 @@ private:
 	
 	//the last request
 	pteam_p2os::RobotControlRequest m_last_request;
+	//new request flag
+	bool m_new_flag;
+	//the applied controls
+	pteam_p2os::RobotControlRequest m_controls;
 	//mutex for mutual exclusion
 	boost::mutex m_lr_mutex;
 	
@@ -43,6 +47,7 @@ private:
 		
 		m_lr_mutex.lock();
 			m_last_request = req;
+			m_new_flag = true;
 		m_lr_mutex.unlock();
 		
 		return true;
@@ -69,8 +74,17 @@ public:
 		m_rc_publisher = m_nh.advertise<geometry_msgs::Twist>(robot_control_topic, 1);
 		
 		//reset the command
+		m_controls.linear_speed = 0.0f;
+		m_controls.angular_speed = 0.0f;
+		//use this to set the initial state
+		m_new_flag = true;
+		//set the state
+		m_last_request.linear_speed_set = true;
 		m_last_request.linear_speed = 0.0f;
+		m_last_request.angular_speed_set = true;
 		m_last_request.angular_speed = 0.0f;
+		m_last_request.gripper_move_set = true;
+		m_last_request.gripper_move_down = false;
 	}
 	
 	~ControlNode() { /* do nothing*/ }
@@ -79,17 +93,43 @@ public:
 		///TODO il controllo si fa dove riceviamo la risposta o da un altra parte???
 		
 		pteam_p2os::RobotControlRequest last_request;
+		bool new_flag;
 		
 		m_lr_mutex.lock();
 			last_request = m_last_request;
+			new_flag = m_new_flag;
+			//lower the flag
+			m_new_flag = false;
 		m_lr_mutex.unlock();
+		
+		if(new_flag) {
+			//update the applied commands
+			//angular speed
+			if(m_last_request.angular_speed_set) {
+				m_controls.angular_speed = m_last_request.angular_speed;
+			}
+			
+			//linear speed
+			if(m_last_request.linear_speed_set) {
+				m_controls.linear_speed = m_last_request.linear_speed;
+			}
+			
+			//gripper
+			if(m_last_request.gripper_move_set) {
+				if(m_last_request.gripper_move_down) {
+					//move down
+				} else {
+					//move up
+				}
+			}
+		}
 		
 		geometry_msgs::Twist control_input;
 		
 		control_input.angular.x = control_input.angular.y = 0.0;
-		control_input.angular.z = last_request.angular_speed;
+		control_input.angular.z = m_controls.angular_speed;
 		
-		control_input.linear.x = last_request.linear_speed;
+		control_input.linear.x = m_controls.linear_speed;
 		control_input.linear.y = control_input.linear.z = 0.0;
 		
 		m_rc_publisher.publish(control_input);
@@ -123,6 +163,9 @@ public:
 							// 	}
 };
 
+#ifdef	ON_SIMULATION
+#warning SIMULATION ENABLED
+#endif
 
 int main (int argc, char** argv)
 {
