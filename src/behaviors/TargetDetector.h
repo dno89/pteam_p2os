@@ -17,7 +17,7 @@ namespace pteam {
 class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {
 public:
         virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );
-        virtual TargetDetector~();
+        virtual ~TargetDetector();
 };
 
 }

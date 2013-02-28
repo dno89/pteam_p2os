@@ -10,6 +10,11 @@
 #include <stdexcept>
 #include <pteam_p2os/RobotControl.h>
 
+//macro to cnovert from degree to radians
+#define DEG_TO_RAD(X) X * 0.01745329252
+//macro to cnovert from radians to degree
+#define RAD_TO_DEG(X) X * 57.29577951
+
 namespace pteam {
 
 /**

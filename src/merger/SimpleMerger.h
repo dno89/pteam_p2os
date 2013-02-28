@@ -46,7 +46,53 @@ public:
 		pteam_p2os::RobotControlRequest final_output;
 		pteam::rstRobotControlRequest(&final_output);
 		
-		///TODO:
+		for(auto it = outputs.begin(); it != outputs.end(); ++it) {
+			//linear speed
+			if(!final_output.linear_speed_set) {
+				bool set = false;
+				float total_affinity = 0.0f, linear_speed_acc = 0.0f;
+				for(auto it2 = (*it).begin(); it2 != (*it).end(); ++it2) {
+					set = set || it2->linear_speed_set;
+					if(it2->linear_speed_set) {
+						linear_speed_acc += it2->linear_speed * it2->affinity;
+						total_affinity += it2->affinity;
+					}
+				}
+				
+				if(set) {
+					final_output.linear_speed_set = true;
+					final_output.linear_speed = linear_speed_acc / total_affinity;
+				}
+			}
+			
+			//angular speed
+			if(!final_output.angular_speed_set) {
+				bool set = false;
+				float total_affinity = 0.0f, angular_speed_acc = 0.0f;
+				for(auto it2 = (*it).begin(); it2 != (*it).end(); ++it2) {
+					set = set || it2->angular_speed_set;
+					if(it2->angular_speed_set) {
+						angular_speed_acc += it2->angular_speed * it2->affinity;
+						total_affinity += it2->affinity;
+					}
+				}
+				
+				if(set) {
+					final_output.angular_speed_set = true;
+					final_output.angular_speed = angular_speed_acc / total_affinity;
+				}
+			}
+			
+			//gripper movement
+			if(!final_output.gripper_move_set) {
+				for(auto it2 = it->begin(); it2 != it->end(); ++it2) {
+					if(it2->gripper_move_set) {
+						final_output.gripper_move_set = true;;
+						final_output.gripper_move_down = it2->gripper_move_down;
+					}
+				}
+			}
+		}
 		
 		return final_output;
 	}

@@ -7,6 +7,7 @@
 #include <ros/ros.h>
 #include <pteam_p2os/RobotControl.h>
 #include <geometry_msgs/Twist.h>
+#include <gripper_driver/Messaggio.h>
 
 
 #include "base/DMDebug.h"
@@ -37,6 +38,9 @@ private:
 	//a publisher to actually control the robot
 	ros::Publisher m_rc_publisher;
 	
+	//service client to handle the gripper
+	ros::ServiceClient m_gripper_client;
+	
 	bool handleRequest(pteam_p2os::RobotControlRequest& req, pteam_p2os::RobotControlResponse& res) {
 		///TODO: handle the response here
 		///TODO: se si accede a qualche dato sicuramente serve anche un bel mutex
@@ -52,6 +56,13 @@ private:
 		
 		return true;
 	}
+	
+	enum eGripperCmd {
+		eGCALZA = 1,
+		eGCABBASSA,
+		eGCFERMA,
+		eGCABBASSA_PALLA
+	};
 	
 public:
 	ControlNode(): m_nh("control_node") {
@@ -72,6 +83,8 @@ public:
 		
 		ROS_INFO("Advertising topic %s",robot_control_topic.c_str()); 
 		m_rc_publisher = m_nh.advertise<geometry_msgs::Twist>(robot_control_topic, 1);
+		
+		m_gripper_client = m_nh.serviceClient<gripper_driver::Messaggio>("messaggio");
 		
 		//reset the command
 		m_controls.linear_speed = 0.0f;
@@ -117,10 +130,18 @@ public:
 			//gripper
 			///TODO: aggiungo i comandi del gripper
 			if(m_last_request.gripper_move_set) {
+				gripper_driver::Messaggio gripper_srv;
+				
 				if(m_last_request.gripper_move_down) {
 					//move down
+					gripper_srv.request.cmd = (int)eGCABBASSA;
 				} else {
 					//move up
+					gripper_srv.request.cmd = (int)eGCALZA;
+				}
+				
+				if(!m_gripper_client.call(gripper_srv)) {
+					ROS_ERROR("Service call to the gripper driver failed!");
 				}
 			}
 		}
