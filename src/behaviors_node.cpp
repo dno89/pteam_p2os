@@ -37,7 +37,7 @@ private:
 	ros::NodeHandle m_nh;
 	
 	//the Processed Laser Scanner (PLS) subscriber
-	ros::Subscriber m_pls_sub;
+	ros::Subscriber m_perc_sub;
 	//the last processed input
 	pteam_p2os::Perception m_perc_msg;
 	//mutex to read/write the message
@@ -70,7 +70,7 @@ public:
 		m_nh.param<std::string>("robot_control_service", robot_control_service, "robot_control_service");
 		
 		ROS_INFO("Subscribing to topic %s",processed_ls_topic.c_str()); 
-		m_pls_sub = m_nh.subscribe(processed_ls_topic, 1, &DebugNode::newLaserScan, this);
+		m_perc_sub = m_nh.subscribe(processed_ls_topic, 1, &DebugNode::newLaserScan, this);
 		
 		
 		ROS_INFO("Using service %s",robot_control_service.c_str()); 

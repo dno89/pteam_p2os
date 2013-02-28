@@ -65,3 +65,6 @@ target_link_libraries(behaviors_node stay_in_the_middle)
 # target_link_libraries(behaviors_node target_detector take_the_ball collision_avoidance move_throughward_goal stay_in_the_middle)
 
 # target_link_libraries(behaviors_node ${BEHAVIOR_LINK_LIBRARIES})
+
+#debug node
+target_link_libraries(debug_node boost_iostreams boost_system boost_filesystem)

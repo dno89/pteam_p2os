@@ -16,4 +16,7 @@
     <param name="robot_control_service" value="/robot_0/robot_control_service" />
     <param name="robot_control_topic" value="/robot_0/cmd_vel" />
   </node>
+  <node pkg="pteam_p2os" type="debug_node" name="debug_node" >
+    <param name="processed_ls_topic" value="/robot_0/processed_ls" />
+  </node>
 </launch>
