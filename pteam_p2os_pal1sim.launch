@@ -6,7 +6,7 @@
     <param name="scan_topic" value="/robot_0/base_scan" />
     <param name="processed_ls_topic" value="/robot_0/processed_ls" />
     <param name="odom_topic" value="/robot_0/odom" />
-    <param name="clamp_angle_degree" value=90.0 />
+    <param name="clamp_angle_degree" value="90.0" />
   </node>
   <node pkg="pteam_p2os" type="behaviors_node" name="behaviors_node" >
     <param name="processed_ls_topic" value="/robot_0/processed_ls" />
