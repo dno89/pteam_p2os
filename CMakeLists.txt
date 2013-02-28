@@ -28,7 +28,6 @@ endif()
 rosbuild_genmsg()
 #uncomment if you have defined services
 rosbuild_gensrv()
-add_definitions(-std=c++0x)
 
 #C++11 standard
 add_definitions(-std=c++0x)
@@ -37,7 +36,10 @@ rosbuild_add_executable(sensing_node src/sensing_node.cpp)
 rosbuild_add_executable(behaviors_node src/behaviors_node.cpp)
 rosbuild_add_executable(control_node src/control_node.cpp)
 
-include_directories(src/)
+include_directories(
+	src/
+	${Boost_INCLUDE_DIR}
+)
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)

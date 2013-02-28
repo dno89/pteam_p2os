@@ -163,10 +163,6 @@ public:
 							// 	}
 };
 
-#ifdef	ON_SIMULATION
-#warning SIMULATION ENABLED
-#endif
-
 int main (int argc, char** argv)
 {
 	ros::init (argc, argv, "behaviors_node");

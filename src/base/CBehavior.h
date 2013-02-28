@@ -8,13 +8,63 @@
 #ifndef	CBEHAVIOR_H
 #define	CBEHAVIOR_H
 
+
+#include <boost/any.hpp>
 #include <cstdlib>
+#include <map>
+#include <string>
+#include <stdexcept>
 
 namespace pteam {
 
 template<typename InputT, typename OutputT>
 class CBehavior {
+	static std::map<std::string, boost::any> shared_map;
 protected:
+	template<typename T>
+	void AddProperty(const std::string& ID, const T& default_value) {
+		shared_map.insert(std::make_pair(ID, boost::any(default_value)));
+	}
+	
+	template<typename T>
+	T ReadProperty(const std::string& ID) const {
+		//check whether the property exists
+		if(shared_map.count(ID) == 0) {
+			//the property doesn't exist
+			throw std::runtime_error("CBehavior::ReadProperty ERROR: property "+ID+" doesn't exist!\n");
+		}
+		
+		//type check
+		if(typeid(T) != shared_map[ID].type()) {
+			//type are different
+			throw std::runtime_error("CBehavior::ReadProperty ERROR: function called with type " + 
+			std::string(typeid(T).name()) + 
+			", but \"" + ID + "\" has type " + std::string(shared_map[ID].type().name()) + "!\n");
+		}
+		
+		//everything is fine, read the property
+		return boost::any_cast<T>(shared_map[ID]);
+	}
+	
+	template<typename T>
+	void ReadProperty(const std::string& ID, T* value) const {
+		//check whether the property exists
+		if(shared_map.count(ID) == 0) {
+			//the property doesn't exist
+			throw std::runtime_error("CConfigurable::ReadProperty ERROR: property "+ID+" doesn't exist!\n");
+		}
+		
+		//type check
+		if(typeid(T) != shared_map[ID].type()) {
+			//type are different
+			throw std::runtime_error("CConfigurable::ReadProperty ERROR: \"value\" has type " + 
+			std::string(typeid(value).name()) + 
+			", but \"" + ID + "\" has type " + std::string(shared_map[ID].type().name()) + "!\n");
+		}
+		
+		//everything is fine, read the property
+		*value = boost::any_cast<T>(shared_map[ID]);
+	}
 public:
 	
 	/**
