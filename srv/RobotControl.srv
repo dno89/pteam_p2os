@@ -1,3 +1,7 @@
 float32 angular_speed
+bool angular_speed_set
 float32 linear_speed
+bool linear_speed_set
+bool gripper_move_down
+bool gripper_move_set
 ---

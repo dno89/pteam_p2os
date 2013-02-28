@@ -27,21 +27,41 @@ struct RobotControlRequest_ {
 
   RobotControlRequest_()
   : angular_speed(0.0)
+  , angular_speed_set(false)
   , linear_speed(0.0)
+  , linear_speed_set(false)
+  , gripper_move_down(false)
+  , gripper_move_set(false)
   {
   }
 
   RobotControlRequest_(const ContainerAllocator& _alloc)
   : angular_speed(0.0)
+  , angular_speed_set(false)
   , linear_speed(0.0)
+  , linear_speed_set(false)
+  , gripper_move_down(false)
+  , gripper_move_set(false)
   {
   }
 
   typedef float _angular_speed_type;
   float angular_speed;
 
+  typedef uint8_t _angular_speed_set_type;
+  uint8_t angular_speed_set;
+
   typedef float _linear_speed_type;
   float linear_speed;
+
+  typedef uint8_t _linear_speed_set_type;
+  uint8_t linear_speed_set;
+
+  typedef uint8_t _gripper_move_down_type;
+  uint8_t gripper_move_down;
+
+  typedef uint8_t _gripper_move_set_type;
+  uint8_t gripper_move_set;
 
 
   typedef boost::shared_ptr< ::pteam_p2os::RobotControlRequest_<ContainerAllocator> > Ptr;
@@ -99,12 +119,12 @@ template<class ContainerAllocator>
 struct MD5Sum< ::pteam_p2os::RobotControlRequest_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "2cc72ad6dc716a7d6153d5f2a1e7f7f3";
+    return "b81443d0db58f2178ec4ad98a5e09b60";
   }
 
   static const char* value(const  ::pteam_p2os::RobotControlRequest_<ContainerAllocator> &) { return value(); } 
-  static const uint64_t static_value1 = 0x2cc72ad6dc716a7dULL;
-  static const uint64_t static_value2 = 0x6153d5f2a1e7f7f3ULL;
+  static const uint64_t static_value1 = 0xb81443d0db58f217ULL;
+  static const uint64_t static_value2 = 0x8ec4ad98a5e09b60ULL;
 };
 
 template<class ContainerAllocator>
@@ -122,7 +142,11 @@ struct Definition< ::pteam_p2os::RobotControlRequest_<ContainerAllocator> > {
   static const char* value() 
   {
     return "float32 angular_speed\n\
+bool angular_speed_set\n\
 float32 linear_speed\n\
+bool linear_speed_set\n\
+bool gripper_move_down\n\
+bool gripper_move_set\n\
 \n\
 ";
   }
@@ -189,7 +213,11 @@ template<class ContainerAllocator> struct Serializer< ::pteam_p2os::RobotControl
   template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
   {
     stream.next(m.angular_speed);
+    stream.next(m.angular_speed_set);
     stream.next(m.linear_speed);
+    stream.next(m.linear_speed_set);
+    stream.next(m.gripper_move_down);
+    stream.next(m.gripper_move_set);
   }
 
   ROS_DECLARE_ALLINONE_SERIALIZER;
@@ -222,7 +250,7 @@ template<>
 struct MD5Sum<pteam_p2os::RobotControl> {
   static const char* value() 
   {
-    return "2cc72ad6dc716a7d6153d5f2a1e7f7f3";
+    return "b81443d0db58f2178ec4ad98a5e09b60";
   }
 
   static const char* value(const pteam_p2os::RobotControl&) { return value(); } 
@@ -242,7 +270,7 @@ template<class ContainerAllocator>
 struct MD5Sum<pteam_p2os::RobotControlRequest_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "2cc72ad6dc716a7d6153d5f2a1e7f7f3";
+    return "b81443d0db58f2178ec4ad98a5e09b60";
   }
 
   static const char* value(const pteam_p2os::RobotControlRequest_<ContainerAllocator> &) { return value(); } 
@@ -262,7 +290,7 @@ template<class ContainerAllocator>
 struct MD5Sum<pteam_p2os::RobotControlResponse_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "2cc72ad6dc716a7d6153d5f2a1e7f7f3";
+    return "b81443d0db58f2178ec4ad98a5e09b60";
   }
 
   static const char* value(const pteam_p2os::RobotControlResponse_<ContainerAllocator> &) { return value(); } 
