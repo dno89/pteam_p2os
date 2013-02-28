@@ -15,13 +15,11 @@
 
 
 #include "base/DMDebug.h"
-// #include "base/Common.h"
+#include "base/Common.h"
 
 
 
 CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-sensing_node.log")
-
-///TODO: definire il formato del messaggio ProcessedLS nel file msg/ProcessedLS.msg! Consultare la wiki per i tipi disponibili!
 
 class SensingNode {
 private:
@@ -43,9 +41,15 @@ private:
 	//flag that indicate a new scan or odometry to process
 	bool m_new_flag;
 	
-	
 	//processed input publisher
 	ros::Publisher m_processed_ls_pub;
+	
+	//the campled value of the FOV > 0 in radians
+	double m_clamp_angle;
+	//the distance threshold to detect discontinuity
+	double m_distance_threshold;
+	//the size (in points) of the filtered segment
+	int m_min_segment_lengh;
 	
 	void newLaserScan(const sensor_msgs::LaserScan& scan_msg) {
 		m_mutex.lock();
@@ -69,8 +73,19 @@ public:
 		
 		// Reads params from file
 		m_nh.param<std::string>("scan_topic", scan_topic, "scan_base");
+		
 		m_nh.param<std::string>("odom_topic", odom_topic, "odom");
+		
 		m_nh.param<std::string>("processed_ls_topic", processed_ls_topic, "/processed_ls");
+		
+		double clamp_angle_deg;
+		m_nh.param<double>("clamp_angle_degree", clamp_angle_deg, 90.0);
+		m_clamp_angle = DEG_TO_RAD(clamp_angle_deg);
+		
+		m_nh.param<double>("distance_threshold", m_distance_threshold, 0.1);
+		
+		m_nh.param<int>("min_segment_lenght", m_min_segment_lengh, 4);
+		
 		
 		ROS_INFO("Subscribing to topic %s",scan_topic.c_str()); 
 		m_scan_sub = m_nh.subscribe(scan_topic, 1, &SensingNode::newLaserScan, this);
@@ -116,6 +131,8 @@ public:
 		/************************************************************/
 		
 #ifdef ON_SIMULATION
+#warning ##SIMULATION ENABLED##
+
 		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();  
 		std::default_random_engine generator (seed);
 		std::normal_distribution<double>distribution(0.0, 0.01);   
@@ -124,15 +141,61 @@ public:
 		std::reverse(scan_msg.ranges.begin(),scan_msg.ranges.end());    
 		
 		//Aggiunta rumore gaussiano alle misure del simulatore
-		for (int i=0; i<scan_msg.ranges.size(); i++)
+		for (int i=0; i<scan_msg.ranges.size(); ++i)
 		{
-		  scan_msg.ranges[i]=scan_msg.ranges[i]+ distribution(generator); 
+			if(generator() % 1000 == 0) {
+				//unlucky scan
+				scan_msg.ranges[i] = 0.0;
+			} else {
+				scan_msg.ranges[i] = scan_msg.ranges[i] + distribution(generator); 
+			}
 		}
+		
 #endif	//ON_SIMULATION
 		
-		//robot
-		std::reverse(scan_msg.ranges.begin(),scan_msg.ranges.end());   
+		//ROBOT
 		
+		//flip the scan
+		std::reverse(scan_msg.ranges.begin(),scan_msg.ranges.end());
+		
+		//clamp the FOV
+		if(scan_msg.angle_max > m_clamp_angle) {
+			int min_index = (-m_clamp_angle - scan_msg.angle_min) / scan_msg.angle_increment;
+			int max_index = (m_clamp_angle - scan_msg.angle_min) / scan_msg.angle_increment;
+			//clamp the value
+			scan_msg.ranges = sensor_msgs::LaserScan::_ranges_type(scan_msg.ranges.begin()+min_index, scan_msg.ranges.begin()+max_index+1);
+			//set the bound
+			scan_msg.angle_min = -m_clamp_angle;
+			scan_msg.angle_max = m_clamp_angle;
+		}
+		
+		//outlier and isolated segment filtering
+		int count = 0;
+		int first_index = 0;
+		for(int ii = 0; ii < scan_msg.ranges.size()-1; ++ii) {
+			if(scan_msg.ranges[ii] < scan_msg.range_min || scan_msg.ranges[ii] > scan_msg.range_max) {
+				scan_msg.ranges[ii] = NAN;
+				continue;
+			}
+			
+			if(std::abs(scan_msg.ranges[ii] - scan_msg.ranges[ii+1]) > m_distance_threshold) {
+				if(count < m_min_segment_lengh) {
+					for(int jj = first_index; jj <= ii; ++jj) {
+						scan_msg.ranges[jj] = NAN;
+					}
+					count = 0;
+				} else {
+					count = 1;
+				}
+				first_index = ii+1;
+			} else {
+				++count;
+			}
+		}
+		//check the last element
+		if(scan_msg.ranges.back() < scan_msg.range_min || scan_msg.ranges.back() > scan_msg.range_max) {
+			scan_msg.ranges.back() = NAN;
+		}
 		
 		
 		
