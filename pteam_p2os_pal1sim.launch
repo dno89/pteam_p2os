@@ -18,5 +18,6 @@
   </node>
   <node pkg="pteam_p2os" type="debug_node" name="debug_node" >
     <param name="processed_ls_topic" value="/robot_0/processed_ls" />
+    <param name="scan_topic" value="/robot_0/base_scan" />
   </node>
 </launch>
