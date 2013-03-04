@@ -6,17 +6,18 @@
  */
 
 #include <cmath>
-#include <math.h>
 
 #include "StayInTheMiddle.h"
 #include "base/Common.h"
 #define PI 3.14159265
 
 using namespace pteam;
+using namespace std;
 
-StayInTheMiddle::StayInTheMiddle(float threshold, float threshold_valley) : m_threshold(threshold), m_threshold_valley(threshold_valley) {}
+StayInTheMiddle::StayInTheMiddle(float threshold, int threshold_valley) : m_threshold(threshold), m_threshold_valley(threshold_valley) {}
 
 pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::Perception& in, bool* subsume ) {
+	*subsume = false;
 	return stay_in_the_middle(in, m_threshold, m_threshold_valley);
 }
 
@@ -97,10 +98,10 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::stay_in_the_middle(const pteam_
   req.affinity = 1;
   req.linear_speed = cos(free_direction*PI/180);
   req.linear_speed_set = true;
-  req.anglar_speed = sin(free_direction*PI/180);	
+  req.angular_speed = sin(free_direction*PI/180);	
   req.angular_speed_set = true;
   
-    
+  return req;
 }
 
 StayInTheMiddle::~StayInTheMiddle() {

@@ -10,9 +10,12 @@
 #include <geometry_msgs/Twist.h>
 
 
+////behaviors
 #include <behaviors/CollisionAvoidance.h>
 #include <behaviors/StayInTheMiddle.h>
+////merger
 #include <merger/SimpleMerger.h>
+////common
 #include <base/DMDebug.h>
 #include <base/CBehavior.h>
 #include <base/BehaviorManager.h>
@@ -80,12 +83,12 @@ public:
 		
 		///TODO: costruisco la catena dei behaviors!!!
 		m_behaviors_manager.AddBehaviorsLevel();
-// 		m_behaviors_manager.AddBehavior(0, new DummyBehavior());
-		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(1.0, 0.4));
-		//TODO add target detector
  		m_behaviors_manager.AddBehaviorsLevel();
 		
-		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle(m_perc_msg, 1, 1)); 	///TODO: impostare le soglie!!!!!!
+		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(1.0, 0.4));
+		//TODO add target detector
+		
+		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(1.0, 1)); 	///TODO: impostare le soglie!!!!!!
 // 		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle());
 	}
 	
@@ -152,9 +155,8 @@ public:
 
 int main (int argc, char** argv)
 {
-	pteam::CollisionAvoidance ca;
 	ros::init (argc, argv, "behaviors_node");
-	BehaviorsNode bn;	
+	BehaviorsNode bn;
 	ros::Rate loop_rate(10);
 	while (ros::ok()) {
 		ros::spinOnce();
