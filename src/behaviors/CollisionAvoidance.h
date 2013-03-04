@@ -5,8 +5,8 @@
  * @brief some behaviors implementation
  */
 
-#ifndef	BEHAVIORS_H
-#define BEHAVIORS_H
+#ifndef	COLLISIONAVOIDANCE_H
+#define COLLISIONAVOIDANCE_H
 
 #include <base/CBehavior.h>
 #include <pteam_p2os/Perception.h>
@@ -24,4 +24,4 @@ public:
 
 }
 
-#endif	//BEHAVIORS_H
+#endif	//COLLISIONAVOIDANCE_H
