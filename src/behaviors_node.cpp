@@ -88,7 +88,7 @@ public:
 		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(1.0, 0.4));
 		//TODO add target detector
 		
-		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(0.5, 20)); 	///TODO: impostare le soglie!!!!!!
+		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(4, 10)); 	///TODO: impostare le soglie!!!!!!
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }
