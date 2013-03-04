@@ -11,6 +11,7 @@
 
 
 #include <behaviors/CollisionAvoidance.h>
+#include <behaviors/StayInTheMiddle.h>
 #include <merger/SimpleMerger.h>
 #include <base/DMDebug.h>
 #include <base/CBehavior.h>
@@ -31,7 +32,7 @@ public:
 	}
 };
 
-class DebugNode {
+class BehaviorsNode {
 private:
 	//the node handler
 	ros::NodeHandle m_nh;
@@ -61,7 +62,7 @@ private:
 	}
 	
 public:
-	DebugNode(): m_nh("behaviors_node"), m_new_flag(false) {
+	BehaviorsNode(): m_nh("behaviors_node"), m_new_flag(false) {
 		std::string processed_ls_topic;
 		std::string robot_control_service;
 		
@@ -70,16 +71,22 @@ public:
 		m_nh.param<std::string>("robot_control_service", robot_control_service, "robot_control_service");
 		
 		ROS_INFO("Subscribing to topic %s",processed_ls_topic.c_str()); 
-		m_perc_sub = m_nh.subscribe(processed_ls_topic, 1, &DebugNode::newLaserScan, this);
+		m_perc_sub = m_nh.subscribe(processed_ls_topic, 1, &BehaviorsNode::newLaserScan, this);
 		
 		
 		ROS_INFO("Using service %s",robot_control_service.c_str()); 
 		m_rc_client = m_nh.serviceClient<pteam_p2os::RobotControl>(robot_control_service);
 		
 		///TODO: costruisco la catena dei behaviors!!!
+		m_behaviors_manager.AddBehaviorsLevel();
+		m_behaviors_manager.AddBehavior(0, new CollisionAvoidance(0.2, 0.2));
+		//TODO add target detector
+		m_behaviors_manager.AddBehaviorsLevel();
+		
+		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle());
 	}
 	
-	~DebugNode() { /* do nothing*/ }
+	~BehaviorsNode() { /* do nothing*/ }
 	
 	void ExecuteBehaviors() {
 		bool new_flag;
@@ -144,7 +151,7 @@ int main (int argc, char** argv)
 {
 	pteam::CollisionAvoidance ca;
 	ros::init (argc, argv, "behaviors_node");
-	DebugNode bn;  
+	BehaviorsNode bn;	
 	ros::Rate loop_rate(10);
 	while (ros::ok()) {
 		ros::spinOnce();

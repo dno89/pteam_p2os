@@ -15,12 +15,12 @@
 namespace pteam {
 	
 class StayInTheMiddle : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {
+	float m_threshold, m_threshold_valley;
 public:	
-	void stay_in_the_middle(const pteam_p2os::Perception in, float threashold, int threashold_valley);
-	
-        virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );
-
-        virtual ~StayInTheMiddle();
+	StayInTheMiddle(float threshold, float threshold_valley);
+	pteam_p2os::RobotControlRequest stay_in_the_middle(const pteam_p2os::Perception in, float threashold, int threashold_valley);
+	virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );
+	virtual ~StayInTheMiddle();
 	
 private:
    std::vector<float> polar_histogram; 

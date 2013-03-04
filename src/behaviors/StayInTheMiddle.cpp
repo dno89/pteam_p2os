@@ -11,11 +11,13 @@
 
 using namespace pteam;
 
+StayInTheMiddle::StayInTheMiddle(float threshold, float threshold_valley) : m_threshold(threshold), m_threshold_valley(threshold_valley) {}
+
 pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::Perception& in, bool* subsume ) {
-	///TODO:
+	return stay_in_the_middle(in, m_threshold, m_threshold_valley);
 }
 
-void StayInTheMiddle::stay_in_the_middle(const pteam_p2os::Perception in, float threashold, int threashold_valley) {
+pteam_p2os::RobotControlRequest StayInTheMiddle::stay_in_the_middle(const pteam_p2os::Perception& in, float threashold, int threashold_valley) {
   int i;				//indice per i for
   float last_value, avg_value;		//last_value è l'ultimo valore valido che ho trovato prima di una sequenza di nan, avg_value è la media pesata dei due estremi (validi) di una sequenza di nan
   bool find_nan;		//true se ho trovato almeno un nan, false se non ho trovato nan
@@ -83,6 +85,11 @@ void StayInTheMiddle::stay_in_the_middle(const pteam_p2os::Perception in, float 
       }
     }
   }
+  
+  pteam_p2os::RobotControlRequest req;
+  rstRobotControlRequest(&req);
+  
+  ///TODO: imposta req
   
 }
 
