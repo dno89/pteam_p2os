@@ -84,30 +84,20 @@ public:
 				continue;
 			}
 			
-			double theta = m_perc_msg.laser.data.angle_min + ii*m_perc_msg.laser.data.angle_increment;
-			double x = m_perc_msg.laser.data.ranges[ii]*cos(theta);
-			double y = m_perc_msg.laser.data.ranges[ii]*sin(theta);
+			double theta = /*m_perc_msg.laser.data.angle_min + */ii*m_perc_msg.laser.data.angle_increment;
+			double x = m_perc_msg.laser.data.ranges[ii]*sin(theta);
+			double y = -m_perc_msg.laser.data.ranges[ii]*cos(theta);
 			
-			processed_points.push_back(make_pair(y, x));
-		}
-		
-		for(int ii = 0; ii < m_ls_scan.ranges.size(); ++ii) {
-			double theta = m_ls_scan.angle_min + ii*m_ls_scan.angle_increment;
-			double x = m_ls_scan.ranges[ii]*cos(theta);
-			double y = m_ls_scan.ranges[ii]*sin(theta);
-			
-			DEBUG_T(theta,)
-			DEBUG_T(x,)
-			DEBUG_T(y,)
-			
-			points.push_back(make_pair(y, x));
+			processed_points.push_back(make_pair(-y, x));
 		}
 		
 // 		m_gp << "plot '-' binary " << m_gp.binfmt(points) << "w points notitle\n";
 // 		m_gp.sendBinary(points);
 // 		m_gp.flush();
-// 		m_gp << "set xrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
-// 		m_gp << "set yrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
+// 		m_gp1 << "set xrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
+		m_gp1 << "set xrange [-6:6]\n";
+		m_gp1 << "set yrange [0:10]\n";
+// 		m_gp1 << "set yrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
 // 		m_gp1 << "plot '-' with points linecolor rgb \"red\" title 'unfiltered data'\n";
 // 		m_gp1.send(points);
 		m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
