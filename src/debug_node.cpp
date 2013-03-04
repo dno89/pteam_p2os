@@ -45,7 +45,7 @@ private:
 	bool m_new_flag;
 	
 	//drawing
-	Gnuplot m_gp1, m_gp2;
+	Gnuplot m_gp1/*, m_gp2*/;
 	
 	
 	void newPerception(const pteam_p2os::Perception& pls_msg) {
@@ -108,13 +108,14 @@ public:
 // 		m_gp.flush();
 // 		m_gp << "set xrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
 // 		m_gp << "set yrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
-		m_gp1 << "plot '-' with points linecolor rgb \"red\" title 'unfiltered data'\n";
-		m_gp1.send(points);
+// 		m_gp1 << "plot '-' with points linecolor rgb \"red\" title 'unfiltered data'\n";
+// 		m_gp1.send(points);
+		m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
+		m_gp1.send(processed_points);
 		m_gp1.flush();
 		
-		m_gp2 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
-		m_gp2.send(processed_points);
-		m_gp2.flush();
+// 		m_gp2 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
+// 		m_gp2.flush();
 	}
 };
 
