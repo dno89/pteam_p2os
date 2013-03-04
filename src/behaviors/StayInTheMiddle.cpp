@@ -65,7 +65,7 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
       continue;
     }
     
-    m_polar_histogram = 1.0 / (1.0 + pow((in.laser.data.ranges[i] - in.laser.data.range_min), m_alpha));
+    m_polar_histogram[i] = 1.0 / (1.0 + pow((in.laser.data.ranges[i] - in.laser.data.range_min), m_alpha));
   }
   
 //   for(i = 0; i < m_polar_histogram.size(); ++i) {
