@@ -27,18 +27,18 @@ pteam_p2os::RobotControlRequest CollisionAvoidance::operator() ( const pteam_p2o
 	
 	double beta_min, beta_max;
 	
-	if(in.odometry.twist.twist.linear.x > 0.01) {
-		double k = in.odometry.twist.twist.angular.z / in.odometry.twist.twist.linear.x;
-		///TODO: check 
-		beta_min = atan2(-(0.2 + m_alpha*k), 0.2);
-		beta_max = atan2((0.2 + m_alpha*k), 0.2);
-	} else {
-		beta_min = DEG_TO_RAD(-45.0);
-		beta_max = DEG_TO_RAD(45.0);
-	}
+// 	if(in.odometry.twist.twist.linear.x > 0.01) {
+// 		double k = in.odometry.twist.twist.angular.z / in.odometry.twist.twist.linear.x;
+// 		///TODO: check 
+// 		beta_min = atan2(-0.2 + m_alpha*k, 0.2);
+// 		beta_max = atan2(0.2 + m_alpha*k, 0.2);
+// 	} else {
+		beta_min = atan2(-m_threshold, .2);
+		beta_max = atan2(m_threshold, .2);
+// 	}
 	
-// 	DEBUG_T(beta_min, )
-// 	DEBUG_T(beta_max, )
+	DEBUG_T(RAD_TO_DEG(beta_min), )
+	DEBUG_T(RAD_TO_DEG(beta_max), )
 	
 	int imin = (beta_min - in.laser.data.angle_min) / in.laser.data.angle_increment;
 	int imax = (beta_max - beta_min) / in.laser.data.angle_increment;
