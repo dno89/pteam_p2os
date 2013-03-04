@@ -6,8 +6,13 @@
  */
 
 #include <cmath>
+#include <math.h>
 
 #include "StayInTheMiddle.h"
+#include "base/Common.h"
+#include <pteam_p2os/RobotControl.h>
+
+#define PI 3.14159265
 
 using namespace pteam;
 
@@ -30,6 +35,8 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::stay_in_the_middle(const pteam_
   int valley_first_index, valley_last_index;	//indici iniziale e finale della valley con ampiezza maggiore
   int width;
   
+  float free_direction;			//direzione in cui ci muoviamo
+  
   find_nan = false;
   find_valley = false;
   max_width = 0;
@@ -43,6 +50,10 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::stay_in_the_middle(const pteam_
     }
     else {
       polar_histogram[i] = in.laser.data.range_max - in.laser.data.ranges[i];
+      
+      //se è minore di una certa soglia lo setto a 0
+      if(polar_histogram[i] < threashold)
+	polar_histogram[i] = 0;
       
       if(find_nan) {
 	//calcolo il valore medio da assegnare ai settori nan
@@ -59,14 +70,7 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::stay_in_the_middle(const pteam_
     }
   }
   
-  
-  //a questo punto elimino dal polar histogram tutti gli elementi che sono al di sotto di una certa soglia
-  for(i = 0; i < polar_histogram.size(); i++) {
-    if(polar_histogram[i] < threashold)
-      polar_histogram[i] = 0;
-  }
-  
-  //cerchiamo gli avvallamenti
+  //cerchiamo gli avvallamenti e vonsideriamo come percorribile la valley con ampiezza maggiore
   for(i = 0; i < polar_histogram.size(); i++) {
     if(polar_histogram[i] == 0) {
       if(!find_valley) {
@@ -85,12 +89,20 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::stay_in_the_middle(const pteam_
       }
     }
   }
+  free_direction = ((valley_first_index + valley_last_index) / 2) - 90;
+  
   
   pteam_p2os::RobotControlRequest req;
   rstRobotControlRequest(&req);
   
-  ///TODO: imposta req
+  ///TODO: imposta velocità
+  req.affinity = 1;
+  req.linear_speed = cos(free_direction*PI/180);
+  req.linear_speed_set = true;
+  req.anglar_speed = sin(free_direction*PI/180);	
+  req.angular_speed_set = true;
   
+    
 }
 
 StayInTheMiddle::~StayInTheMiddle() {

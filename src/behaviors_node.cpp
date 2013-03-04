@@ -83,7 +83,7 @@ public:
 		//TODO add target detector
 		m_behaviors_manager.AddBehaviorsLevel();
 		
-		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle());
+		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle(m_perc_msg, 1, 1)); 	///TODO: impostare le soglie!!!!!!
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }
