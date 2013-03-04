@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "StayInTheMiddle.h"
+#include "base/Common.h"
 
 using namespace pteam;
 

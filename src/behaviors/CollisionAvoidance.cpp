@@ -7,6 +7,7 @@
 
 #include "CollisionAvoidance.h"
 #include "base/Common.h"
+#include <pteam_p2os/RobotControl.h>
 #include <cmath>
 #include <limits>
 
