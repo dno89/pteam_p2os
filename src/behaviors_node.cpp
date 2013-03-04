@@ -81,7 +81,7 @@ public:
 		///TODO: costruisco la catena dei behaviors!!!
 		m_behaviors_manager.AddBehaviorsLevel();
 // 		m_behaviors_manager.AddBehavior(0, new DummyBehavior());
-		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(0.2, 0.2));
+		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(1.0, 0.4));
 		//TODO add target detector
 // 		m_behaviors_manager.AddBehaviorsLevel();
 		

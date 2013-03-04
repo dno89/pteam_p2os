@@ -7,9 +7,12 @@
 
 #include "CollisionAvoidance.h"
 #include "base/Common.h"
+#include "base/DMDebug.h"
 #include <pteam_p2os/RobotControl.h>
 #include <cmath>
 #include <limits>
+
+CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-collision_avoidance.log")
 
 using namespace pteam;
 using namespace std;
@@ -20,6 +23,8 @@ CollisionAvoidance::CollisionAvoidance(double alpha, double threshold) : m_alpha
 
 
 pteam_p2os::RobotControlRequest CollisionAvoidance::operator() ( const pteam_p2os::Perception& in, bool* subsume ) {
+// 	DEBUG_P("CollisionAvoidance::operator() called",)
+	
 	double beta_min, beta_max;
 	
 	if(in.odometry.twist.twist.linear.x > 0.01) {
@@ -32,8 +37,14 @@ pteam_p2os::RobotControlRequest CollisionAvoidance::operator() ( const pteam_p2o
 		beta_max = DEG_TO_RAD(45.0);
 	}
 	
+// 	DEBUG_T(beta_min, )
+// 	DEBUG_T(beta_max, )
+	
 	int imin = (beta_min - in.laser.data.angle_min) / in.laser.data.angle_increment;
 	int imax = (beta_max - beta_min) / in.laser.data.angle_increment;
+	
+// 	DEBUG_T(imin, )
+// 	DEBUG_T(imax, )
 	
 	double min_scan = numeric_limits<double>::max();
 	
@@ -50,11 +61,17 @@ pteam_p2os::RobotControlRequest CollisionAvoidance::operator() ( const pteam_p2o
 	pteam_p2os::RobotControlRequest req;
 	rstRobotControlRequest(&req);
 	
+// 	DEBUG_T(min_scan,)
+// 	DEBUG_T(m_threshold,)
+	
 	if(min_scan < m_threshold) {
 		req.affinity = 1000.0;
 		req.linear_speed = 0.0f;
-		req.linear_speed = true;
+		req.linear_speed_set = true;
 	}
+	
+	*subsume = false;
+	return req;
 }
 
 CollisionAvoidance::~CollisionAvoidance() {
