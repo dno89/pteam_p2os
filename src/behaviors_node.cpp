@@ -86,16 +86,25 @@ public:
  		m_behaviors_manager.AddBehaviorsLevel();
 		
 		double CA_alpha, CA_threshold;
-		m_nh.param<double>("CA-alpha", CA_alpha, 0.01);
-		m_nh.param<double>("CA-threshold", CA_threshold, 0.3);
+		m_nh.param<double>("CA_alpha", CA_alpha, double(0.01));
+// 		ROS_INFO("CA_alpha read, %f", CA_alpha);
+		m_nh.param<double>("CA_threshold", CA_threshold, double(0.3));
+// 		ROS_INFO("CA_threshold read, %f", CA_threshold);
+		
+		DEBUG_T(CA_alpha,)
+		DEBUG_T(CA_threshold,)
+		
 		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
 		
 		//TODO add target detector
 		double SITM_threshold, SITM_alpha;
 		int SITM_valley_threshold;
-		m_nh.param<double>("SITM-threshold", SITM_threshold, 0.3);
-		m_nh.param<double>("SITM-alpha", SITM_alpha, 2.0);
-		m_nh.param<int>("SITM-valley_threshold", SITM_valley_threshold, 50);
+		m_nh.param<double>("SITM_threshold", SITM_threshold, double(0.3));
+		m_nh.param<double>("SITM_alpha", SITM_alpha, double(2.0));
+		m_nh.param<int>("SITM_valley_threshold", SITM_valley_threshold, double(50));
+		DEBUG_T(SITM_alpha,)
+		DEBUG_T(SITM_threshold,)
+		DEBUG_T(SITM_valley_threshold,)
 		
 		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha));
 	}

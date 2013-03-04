@@ -68,4 +68,5 @@ floorplan
 )
 
 pioneer( pose [ 0.80 10.00 0 -90.00 ] name "pioneer3dx" color "blue")
-pioneer( pose [ 0.80 -5.00 0 -90.00 ] name "dummy" color "red")
+
+pioneer( pose [ -280.80 -5.00 0 -90.00 ] name "dummy" color "red")
