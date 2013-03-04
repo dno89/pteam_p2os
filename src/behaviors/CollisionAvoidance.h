@@ -15,9 +15,11 @@
 namespace pteam {
 	
 class CollisionAvoidance : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {
+	double m_alpha;
 public:
-        virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );
-        virtual ~CollisionAvoidance();
+	CollisionAvoidance(double alpha);
+	virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );
+	virtual ~CollisionAvoidance();
 };
 
 }
