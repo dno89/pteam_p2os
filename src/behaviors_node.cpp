@@ -155,6 +155,7 @@ public:
 int main (int argc, char** argv)
 {
 	ros::init (argc, argv, "behaviors_node");
+	BehaviorsNode bn;
 	ros::Rate loop_rate(10);
 	while (ros::ok()) {
 		ros::spinOnce();
