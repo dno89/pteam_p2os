@@ -10,8 +10,6 @@
 
 #include "StayInTheMiddle.h"
 #include "base/Common.h"
-#include <pteam_p2os/RobotControl.h>
-
 #define PI 3.14159265
 
 using namespace pteam;

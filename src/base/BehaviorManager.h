@@ -44,26 +44,29 @@ public:
 	OutputT RunBehaviors(const InputT& in);
 	
 private:
+	typedef CBehavior<InputT, OutputT> behavior_t;
+	typedef boost::shared_ptr<behavior_t > shared_prt_t;
+	
 	//the behavior in a multilevel architecture (with multiple behavior on the same level)
-	std::vector<std::vector<boost::shared_ptr<CBehavior<InputT, OutputT> > > > m_behaviors;
+	std::vector<std::vector<shared_prt_t> > m_behaviors;
 	//the output merger
 	OutputMergerT<OutputT> m_merger;
 };
 
 template<typename InputT, typename OutputT, template<class> class OutputMergerT>
 unsigned int BehaviorManager<InputT, OutputT, OutputMergerT>::AddBehaviorsLevel() {
-	m_behaviors.push_back(std::vector<boost::shared_ptr<CBehavior<OutputT, InputT> > >());
+	m_behaviors.push_back(std::vector<shared_prt_t>());
 	return m_behaviors.size()-1;
 }
 
 template<typename InputT, typename OutputT, template<class> class OutputMergerT>
 void BehaviorManager<InputT, OutputT, OutputMergerT>::AddBehavior(unsigned int level, CBehavior<InputT, OutputT>* new_behavior) {
-	if(level < 0 || level >= m_behaviors.size()) {
+	if(level >= m_behaviors.size()) {
 		//level out of range
 		throw std::runtime_error("BehaviorManager<>::AddBehavior ERROR: level = " + boost::lexical_cast<std::string, int>(level) + ", out of range!\n");
 	}
 	
-	m_behaviors[level].push_back(boost::shared_ptr<CBehavior<OutputT, InputT> >(new_behavior));
+	m_behaviors[level].push_back(shared_prt_t(new_behavior));
 }
 
 template<typename InputT, typename OutputT, template<class> class OutputMergerT>

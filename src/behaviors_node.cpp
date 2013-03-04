@@ -23,7 +23,7 @@ CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behaviors_node.log")
 
 ///TODO: definire il tipo per la richiesta al robot control server nel file srv/RobotControl.srv
 
-class DummyBehavior : public pteam::CBehavior<double, double> {
+class DummyBehavior : public pteam::CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {
 public:
     ~DummyBehavior() {};
     double operator() ( const double& in, bool* subsume = 0 ) {
@@ -52,6 +52,7 @@ private:
 	//behaviors manager
 	///TODO: tolgo il DummyMerger e ne definisco uno vero!!
 	pteam::BehaviorManager<pteam_p2os::Perception, pteam_p2os::RobotControlRequest, pteam::SimpleMerger> m_behaviors_manager;
+// 	pteam::BehaviorManager<double, double, pteam::SimpleMerger> m_behaviors_manager;
 	
 	
 	void newLaserScan(const pteam_p2os::Perception& pls_msg) {
@@ -79,11 +80,13 @@ public:
 		
 		///TODO: costruisco la catena dei behaviors!!!
 		m_behaviors_manager.AddBehaviorsLevel();
-		m_behaviors_manager.AddBehavior(0, new CollisionAvoidance(0.2, 0.2));
+// 		m_behaviors_manager.AddBehavior(0, new DummyBehavior());
+		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(1.0, 0.4));
 		//TODO add target detector
-		m_behaviors_manager.AddBehaviorsLevel();
+ 		m_behaviors_manager.AddBehaviorsLevel();
 		
 		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle(m_perc_msg, 1, 1)); 	///TODO: impostare le soglie!!!!!!
+// 		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle());
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }
