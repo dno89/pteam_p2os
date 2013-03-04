@@ -68,6 +68,21 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
     m_polar_histogram[i] = 1.0 / (1.0 + pow((in.laser.data.ranges[i] - in.laser.data.range_min), m_alpha));
   }
   
+  
+  vector<double> phvector;
+  for(int ii = 0; ii < m_polar_histogram.size(); ++ii) {
+	  if(isnan(m_polar_histogram[ii])) {
+		  phvector.push_back(0.0);
+		  continue;
+	  }
+	  
+	  phvector.push_back(m_polar_histogram[ii]);
+  }
+  
+  m_gp << "plot '-' with lines linecolor rgb \"red\" notitle\n";
+  m_gp.send(phvector);
+  m_gp.flush();
+  
 //   for(i = 0; i < m_polar_histogram.size(); ++i) {
 //     DEBUG_T(in.laser.data.ranges[i],)
 //     DEBUG_T(m_polar_histogram[i],)
@@ -81,31 +96,39 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
   
   
   bool find_valley = false;		//true se ho trovato una valle, false se non ho trovato una valle
-  int first_index = 0;			//primo indice della valle
-  int max_width = 0;			//ampiezza della valle con ampiezza massima
-  int valley_first_index = 0, valley_last_index = 0;	//indici iniziale e finale della valley con ampiezza maggiore
-  int width = 0;
+  int first_index = -1;			//primo indice della valle
+  int max_width = -1;			//ampiezza della valle con ampiezza massima
+  int valley_first_index = -1, valley_last_index = -1;	//indici iniziale e finale della valley con ampiezza maggiore
+  int width = -1;
   
   //cerchiamo gli avvallamenti e vonsideriamo come percorribile la valley con ampiezza maggiore
   for(i = 0; i < m_polar_histogram.size(); ++i) {
     if(isnan(m_polar_histogram[i])) {
       continue;
     }
+    
     if(m_polar_histogram[i] < m_threshold) {
-      if(!find_valley) {
-	find_valley = true;
-	first_index = i;
-      }
-    }
-    else {
-      if(find_valley) {
-	width = i - first_index;
-	if(width > m_threshold_valley && width > max_width) {
-	  max_width = width;
-	  valley_first_index = first_index;
-	  valley_last_index = i - 1;
-	}
-      }
+		if(!find_valley) {
+			find_valley = true;
+			first_index = i;
+		}
+    } else {
+		if(find_valley) {
+			find_valley = false;
+			
+			width = i - first_index;
+			
+			if(width > m_threshold_valley && width > max_width) {
+				
+				max_width = width;
+				valley_first_index = first_index;
+				valley_last_index = i - 1;
+				
+				DEBUG_T(max_width,)
+				DEBUG_T(valley_first_index,)
+				DEBUG_T(valley_last_index,)
+			}
+		}
     }
   }
   
@@ -143,7 +166,7 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
   if(angle_width < DEG_TO_RAD(45.0)) {
     vel_limit = 0.1;
   } else {
-    vel_limit = 0.7;
+    vel_limit = 0.4;
   }
   
   req.linear_speed = cos(free_direction)*vel_limit;

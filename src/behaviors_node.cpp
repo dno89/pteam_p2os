@@ -85,10 +85,19 @@ public:
 		m_behaviors_manager.AddBehaviorsLevel();
  		m_behaviors_manager.AddBehaviorsLevel();
 		
-		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(.01, 0.4));
-		//TODO add target detector
+		double CA_alpha, CA_threshold;
+		m_nh.param<double>("CA-alpha", CA_alpha, 0.01);
+		m_nh.param<double>("CA-threshold", CA_threshold, 0.3);
+		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
 		
-		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(0.6,10,4.0)); 	///TODO: impostare le soglie!!!!!!
+		//TODO add target detector
+		double SITM_threshold, SITM_alpha;
+		int SITM_valley_threshold;
+		m_nh.param<double>("SITM-threshold", SITM_threshold, 0.3);
+		m_nh.param<double>("SITM-alpha", SITM_alpha, 2.0);
+		m_nh.param<int>("SITM-valley_threshold", SITM_valley_threshold, 50);
+		
+		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha));
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }

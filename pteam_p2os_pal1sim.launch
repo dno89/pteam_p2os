@@ -11,13 +11,18 @@
   <node pkg="pteam_p2os" type="behaviors_node" name="behaviors_node" >
     <param name="processed_ls_topic" value="/robot_0/processed_ls" />
     <param name="robot_control_service" value="/robot_0/robot_control_service" />
+    <param name="CA-alpha" value="0.01" />
+    <param name="CA-threshold" value="0.3" />
+    <param name="SITM-threshold" value="0.3" />
+    <param name="SITM-valley_threshold" value="50" /> 
+    <param name="SITM-alpha" value="2.0" /> 
   </node>
   <node pkg="pteam_p2os" type="control_node" name="control_node" >
     <param name="robot_control_service" value="/robot_0/robot_control_service" />
     <param name="robot_control_topic" value="/robot_0/cmd_vel" />
   </node>
-  <node pkg="pteam_p2os" type="debug_node" name="debug_node" >
+  <!-- <node pkg="pteam_p2os" type="debug_node" name="debug_node" >
     <param name="processed_ls_topic" value="/robot_0/processed_ls" />
     <param name="scan_topic" value="/robot_0/base_scan" />
-  </node>
+  </node> -->
 </launch>

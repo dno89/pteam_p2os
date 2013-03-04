@@ -12,6 +12,8 @@
 #include <pteam_p2os/Perception.h>
 #include <pteam_p2os/RobotControl.h>
 
+#include "base/gnuplot-iostream.h"
+
 
 namespace pteam {
 	
@@ -20,6 +22,9 @@ class StayInTheMiddle : public CBehavior<pteam_p2os::Perception, pteam_p2os::Rob
 	int m_threshold_valley;
 	std::vector<float> m_polar_histogram; 
 	float m_alpha;
+	
+	///TEST
+	Gnuplot m_gp;
 	
 public:	
 	StayInTheMiddle(float threshold, int threshold_valley, float m_alpha);
