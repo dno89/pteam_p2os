@@ -99,7 +99,7 @@ public:
 		//TODO add target detector
 		double SITM_threshold, SITM_alpha;
 		int SITM_valley_threshold;
-		m_nh.param<double>("SITM_threshold", SITM_threshold, double(0.3));
+		m_nh.param<double>("SITM_threshold", SITM_threshold, double(0.2));
 		m_nh.param<double>("SITM_alpha", SITM_alpha, double(2.0));
 		m_nh.param<int>("SITM_valley_threshold", SITM_valley_threshold, double(50));
 		DEBUG_T(SITM_alpha,)
