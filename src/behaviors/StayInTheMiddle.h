@@ -12,6 +12,7 @@
 #include <pteam_p2os/Perception.h>
 #include <pteam_p2os/RobotControl.h>
 
+
 namespace pteam {
 	
 class StayInTheMiddle : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {

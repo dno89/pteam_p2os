@@ -14,7 +14,11 @@
 
 using namespace pteam;
 
-StayInTheMiddle::StayInTheMiddle(float threshold, float threshold_valley) : m_threshold(threshold), m_threshold_valley(threshold_valley) {}
+StayInTheMiddle::StayInTheMiddle(float threshold, int threshold_valley) : m_threshold(threshold), m_threshold_valley(threshold_valley) {
+  size_t vSize = 180;
+  polar_histogram.resize(vSize);
+  
+}
 
 pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::Perception& in, bool* subsume ) {
 	return stay_in_the_middle(in, m_threshold, m_threshold_valley);
@@ -97,7 +101,7 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::stay_in_the_middle(const pteam_
   req.affinity = 1;
   req.linear_speed = cos(free_direction*PI/180);
   req.linear_speed_set = true;
-  req.anglar_speed = sin(free_direction*PI/180);	
+  req.angular_speed = sin(free_direction*PI/180);	
   req.angular_speed_set = true;
   
     

@@ -85,7 +85,7 @@ public:
 		//TODO add target detector
  		m_behaviors_manager.AddBehaviorsLevel();
 		
-		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle(m_perc_msg, 1, 1)); 	///TODO: impostare le soglie!!!!!!
+		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(1, 1)); 	///TODO: impostare le soglie!!!!!!
 // 		m_behaviors_manager.AddBehavior(1, new StayInTheMiddle());
 	}
 	
