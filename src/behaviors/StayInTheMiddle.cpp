@@ -95,6 +95,18 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
 			}
 		}
 	}
+	if(find_valley) {
+		find_valley = false;
+		
+		width = i - first_index;
+		
+		if(width > m_threshold_valley && width > max_width) {
+			
+			max_width = width;
+			valley_first_index = first_index;
+			valley_last_index = i - 1;
+		}
+	}
 
 	float free_direction;			//direzione in cui ci muoviamo
 
