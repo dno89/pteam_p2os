@@ -13,6 +13,7 @@
 ////behaviors
 #include <behaviors/CollisionAvoidance.h>
 #include <behaviors/StayInTheMiddle.h>
+#include <behaviors/TargetDetector.h>
 ////merger
 #include <merger/SimpleMerger.h>
 ////common
@@ -34,6 +35,10 @@ public:
 		return std::pow(in, 3);
 	}
 };
+
+#ifdef	TURBO_MODE
+#warning ## TURBO MODE ENABLED ##
+#endif	//TURBO_MODE
 
 class BehaviorsNode {
 private:
@@ -95,6 +100,7 @@ public:
 		DEBUG_T(CA_threshold,)
 		
 		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
+		m_behaviors_manager.AddBehavior(0, new pteam::TargetDetector(0.2, 0.15, 0.3, 0.05));
 		
 		//TODO add target detector
 		double SITM_threshold, SITM_alpha, SITM_learning_rate;

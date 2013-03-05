@@ -5,8 +5,8 @@
  * @brief some behaviors implementation
  */
 
-#ifndef	BEHAVIORS_H
-#define BEHAVIORS_H
+#ifndef	MOVETOWARDTHEGOAL_H
+#define MOVETOWARDTHEGOAL_H
 
 #include <base/CBehavior.h>
 #include <pteam_p2os/Perception.h>
@@ -22,4 +22,4 @@ public:
 
 }
 
-#endif	//BEHAVIORS_H
+#endif	//MOVETOWARDTHEGOAL_H

@@ -18,14 +18,13 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 #simulation
 set(ON_SIMULATION OFF CACHE BOOL "Whether use or not the simulation configuration")
-
-set(TURBO_MODE OFF CACHE BOOL "Turbo speed")
-
 if(ON_SIMULATION)
 	message("@ Simulation enabled")
 	add_definitions(-DON_SIMULATION)
 endif()
 
+#turbo
+set(TURBO_MODE OFF CACHE BOOL "Turbo speed")
 if(TURBO_MODE)
 	message("@ Turbo mode enabled")
 	add_definitions(-DTURBO_MODE)
@@ -38,6 +37,10 @@ rosbuild_gensrv()
 
 #C++11 standard
 add_definitions(-std=c++0x)
+
+#Eigen
+find_package(Eigen)
+include_directories(${EIGEN_INCLUDE_DIRS})
 
 rosbuild_add_executable(sensing_node src/sensing_node.cpp)
 rosbuild_add_executable(behaviors_node src/behaviors_node.cpp)

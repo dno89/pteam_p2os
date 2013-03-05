@@ -8,7 +8,10 @@
 #define COMMON_H
 
 #include <stdexcept>
+#include <iostream>
 #include <pteam_p2os/RobotControl.h>
+#include <geometry_msgs/Pose.h>
+#include <Eigen/Dense>
 
 //macro to cnovert from degree to radians
 #define DEG_TO_RAD(X) X * 0.01745329252
@@ -141,6 +144,89 @@ inline typename ContainerT::value_type first_number_before(const ContainerT& v, 
 inline double NLWAverage(double a, double b, double Wa, double Wb, int n) {
 	double alpha = Wa / (Wa + Wb);
 	return (b-a)/2.0 * std::pow(-(2*alpha - 1), 2*n+1) + (a+b)/2.0;
+}
+
+
+/**
+ * @struct Point2
+ * 
+ * Template to hold a point in a 2D space
+ */
+template<typename T>
+struct Point2 {
+	////typedef
+	typedef T base_type;
+	////data
+	T x, y;
+	////functions
+	Point2(T x_ = T(0), T y_ = T(0)) : x(x_), y(y_) {}
+};
+
+typedef Point2<double> Point2d;
+typedef Point2<float> Point2f;
+
+struct Target : public Point2d {
+	////data
+	base_type radius;
+	
+	Target ( base_type x_ = base_type( 0 ), base_type y_ = base_type( 0 ), base_type radius_ = base_type(0) ) : radius(radius_), Point2d(x_, y_) {}
+};
+
+double TargetDistance2(const Target& t1, const Target& t2) {
+	return std::pow(t1.x-t2.x, 2) + std::pow(t1.y-t2.y, 2) + std::pow(t1.radius-t2.radius, 2);
+}
+
+std::ostream& operator<<(std::ostream& out, const Target& t) {
+	out << "x: " << t.x << "\ny: " << t.y << "\nradius: " << t.radius;
+	return out;
+}
+
+struct SimplePose : Point2d {
+	////data
+	base_type theta;
+	
+	SimplePose ( base_type x_ = base_type ( 0 ), base_type y_ = base_type ( 0 ), base_type theta_ = base_type(0)  ) : Point2d(x_, y_), theta(theta_) {}
+};
+
+std::ostream& operator<<(std::ostream& out, const SimplePose& t) {
+	out << "x: " << t.x << "\ny: " << t.y << "\ntheta: " << t.theta;
+	return out;
+}
+
+SimplePose OdomToSimplePose(const geometry_msgs::Pose& pose) {
+// 	double theta = atan2(2.0*(pose.orientation.x*pose.orientation.w + pose.orientation.y*pose.orientation.z), 1.0 - 2.0*(pose.orientation.z*pose.orientation.z + pose.orientation.w*pose.orientation.w));
+	double theta = asin(2.0*pose.orientation.z*pose.orientation.w);
+	return SimplePose(pose.position.x, pose.position.y, theta);
+}
+
+Target RotateTarget(const Target& t, const SimplePose& old_pose, const SimplePose& new_pose) {
+	double dx = old_pose.x - new_pose.x, dy = old_pose.y - new_pose.y, dt = old_pose.theta - new_pose.theta;
+	Eigen::Matrix3d rot_matrix;
+	
+	double c = std::cos(dt);
+	double s = std::sin(dt);
+	
+	//constant terms
+	rot_matrix(2, 0) = 0.0;
+	rot_matrix(2, 1) = 0.0;
+	rot_matrix(2, 2) = 1.0;
+	
+	//rotation matrix
+	rot_matrix(0, 0) = c;
+	rot_matrix(1, 0) = s;
+	rot_matrix(0, 1) = -s;
+	rot_matrix(1, 1) = c;
+	
+	//translation terms
+	rot_matrix(0, 2) = dx;
+	rot_matrix(1, 2) = dy;
+	
+	Eigen::Vector3d p;
+	p << t.x, t.y, 1.0;
+	
+	Eigen::Vector3d new_t = rot_matrix*p;
+	
+	return Target(p[0], p[1], t.radius);
 }
 
 }

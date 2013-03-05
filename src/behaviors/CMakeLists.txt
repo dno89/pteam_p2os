@@ -1,3 +1,7 @@
+find_package(Eigen)
+
+include_directories(${EIGEN_INCLUDE_DIRS})
+
 rosbuild_add_library(target_detector TargetDetector.cpp)
 rosbuild_add_library(take_the_ball TakeTheBall.cpp)
 rosbuild_add_library(collision_avoidance CollisionAvoidance.cpp)
