@@ -98,15 +98,17 @@ public:
 		
 		//TODO add target detector
 		double SITM_threshold, SITM_alpha;
-		int SITM_valley_threshold;
+		int SITM_valley_threshold, SITM_nl_n;
 		m_nh.param<double>("SITM_threshold", SITM_threshold, double(0.2));
 		m_nh.param<double>("SITM_alpha", SITM_alpha, double(2.0));
+		m_nh.param<int>("SITM_nl_n", SITM_nl_n, int(2));
 		m_nh.param<int>("SITM_valley_threshold", SITM_valley_threshold, double(50));
 		DEBUG_T(SITM_alpha,)
 		DEBUG_T(SITM_threshold,)
 		DEBUG_T(SITM_valley_threshold,)
+		DEBUG_T(SITM_nl_n,)
 		
-		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha));
+		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n));
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }

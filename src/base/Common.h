@@ -92,6 +92,57 @@ void rstRobotControlRequest<pteam_p2os::RobotControlRequest> (pteam_p2os::RobotC
 	r->gripper_move_set = false;
 }
 
+
+/**
+ * Find non NAN value in an array like container (accessed through operator[])
+ */
+template<typename ContainerT>
+inline typename ContainerT::value_type first_number_after(const ContainerT& v, int index) {
+	while(isnan(v[index])) {
+		++index;
+		if(index == v.size()) {
+			//end of container
+			return NAN;
+		}
+	}
+	return v[index];
+}
+template<typename ContainerT>
+inline typename ContainerT::value_type first_number_before(const ContainerT& v, int index) {
+	while(isnan(v[index])) {
+		--index;
+		if(index < 0) {
+			//end of container
+			return NAN;
+		}
+	}
+	return v[index];
+}
+
+
+/**
+ * @fn NLWAverage
+ * Non-linear weighted average
+ * 
+ * @param a the first value
+ * @param b the second value
+ * @param Wb the weight of a
+ * @param Wb the weight of b
+ * 
+ * Return a weighted average.
+ * alpha the weight ratio: W_a / (W_a + W_b)
+ * alpha = 1 --> @p a
+ * alpha = 0 --> @p b
+ * 
+ * In between the value is close to (@p a + @p b) / 2
+ * The higher n, the closer it resemble a    \__
+ * 												\
+ */
+inline double NLWAverage(double a, double b, double Wa, double Wb, int n) {
+	double alpha = Wa / (Wa + Wb);
+	return (b-a)/2.0 * std::pow(-(2*alpha - 1), 2*n+1) + (a+b)/2.0;
+}
+
 }
 
 #endif	//COMMON_H 

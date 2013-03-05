@@ -25,6 +25,7 @@
     <param name="SITM_threshold" value="0.2" />
     <param name="SITM_valley_threshold" value="50" /> 
     <param name="SITM_alpha" value="2.0" /> 
+    <param name="SITM_nl_n" value="2" /> 
   </node>
   <node pkg="pteam_p2os" type="control_node" name="control_node" >
     <param name="robot_control_service" value="/robot_0/robot_control_service" />

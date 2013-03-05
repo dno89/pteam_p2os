@@ -19,9 +19,16 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #simulation
 set(ON_SIMULATION OFF CACHE BOOL "Whether use or not the simulation configuration")
 
+set(TURBO_MODE OFF CACHE BOOL "Turbo speed")
+
 if(ON_SIMULATION)
 	message("@ Simulation enabled")
 	add_definitions(-DON_SIMULATION)
+endif()
+
+if(TURBO_MODE)
+	message("@ Turbo mode enabled")
+	add_definitions(-DTURBO_MODE)
 endif()
        
 #uncomment if you have defined messages
