@@ -32,8 +32,14 @@ class StayInTheMiddle : public CBehavior<pteam_p2os::Perception, pteam_p2os::Rob
 #ifndef	NDEBUG
 	Gnuplot m_gp;
 #endif
+	float m_last_angular_speed;
+	bool m_memory_effect;
+	float m_learning_rate;
+	
+	////magic constant
+	static double weight_exponent() { return 2.5; }
 public:	
-	StayInTheMiddle(float threshold, int threshold_valley, float alpha, int nl_n);
+	StayInTheMiddle(float threshold, int threshold_valley, float alpha, int nl_n, bool memory_effect = false, double learning_rate = 0.8);
 	virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );
 	virtual ~StayInTheMiddle();
 

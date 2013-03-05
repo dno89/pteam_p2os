@@ -18,8 +18,8 @@ CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-StayInTheMiddle.log")
 using namespace pteam;
 using namespace std;
 
-StayInTheMiddle::StayInTheMiddle( float threshold, int threshold_valley, float alpha, int nl_n ) : m_threshold(threshold), m_threshold_valley(threshold_valley), m_alpha(alpha), m_nl_n(nl_n) {
-
+StayInTheMiddle::StayInTheMiddle( float threshold, int threshold_valley, float alpha, int nl_n, bool memory_effect, double learning_rate ) : m_threshold(threshold), m_threshold_valley(threshold_valley), m_alpha(alpha), m_nl_n(nl_n), m_memory_effect(memory_effect), m_learning_rate(learning_rate) {
+	m_last_angular_speed = NAN;
 }
 
 pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::Perception& in, bool* subsume ) {
@@ -124,23 +124,39 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
 		int fi = max<int>(0, valley_first_index-1);
 		int li = min<int>(m_polar_histogram.size()-1, valley_last_index+1);
 		
+		float num;
 		
 		//first non nan value before fi
-		float num = first_number_before(m_polar_histogram, fi);
-		if(isnan(num)) num = 1.0f;
+		if(fi == 0) {
+			//default value for free enviroment
+			num = 0.2;
+		} else {
+			num = first_number_before(m_polar_histogram, fi);
+			if(isnan(num)) num = .2f;
+		}
 		//weight first index
 		float w_fi = 1.0f / (num);
-		w_fi *= w_fi;
+		w_fi = pow(w_fi, weight_exponent());
 		
 		//first non nan value after li
-		num = first_number_after(m_polar_histogram, li);
-		if(isnan(num)) num = 1.0f;
+		if(li == m_polar_histogram.size()-1) {
+			//default value for free enviroment
+			num = 0.2;
+		} else {
+			num = first_number_after(m_polar_histogram, li);
+			if(isnan(num)) num = .2f;
+		}
 		//weight of the last index
 		float w_li = 1.0f / (num);
-		w_li *= w_li;
+		w_li = pow(w_li, weight_exponent());
 		
 		//the weight parameter
 		free_direction = NLWAverage(fi, li, w_fi, w_li, m_nl_n) * in.laser.data.angle_increment + in.laser.data.angle_min;
+		
+// 		if(m_memory_effect && !isnan(m_last_free_direction)) {
+// 			//memory effect: low pass filter to ammortize the oscillations
+// 			free_direction = m_learning_rate*free_direction + (1.0 - m_learning_rate) * m_last_free_direction;
+// 		}
 		
 		DEBUG_P("Finding the free direction",)
 		DEBUG_T(fi,)
@@ -151,10 +167,13 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
 		DEBUG_T(w_li,)
 		DEBUG_T(NLWAverage(fi, li, w_fi, w_li, m_nl_n),)
 		DEBUG_T(RAD_TO_DEG(free_direction),)
-		DEBUG_P("",)
 		
 // 		free_direction = ((valley_first_index + valley_last_index) / 2)*in.laser.data.angle_increment + in.laser.data.angle_min;
 	}
+	
+// 	if(m_memory_effect) {
+// 		m_last_free_direction = free_direction;
+// 	}
 
 // 	DEBUG_T(RAD_TO_DEG(in.laser.data.angle_increment),)
 // 	DEBUG_T(RAD_TO_DEG(in.laser.data.angle_min),)
@@ -169,7 +188,14 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
 
 	req.angular_speed = sin(free_direction);
 	req.angular_speed_set = true;
-
+	
+	if(m_memory_effect) {
+		if(!isnan(m_last_angular_speed)) {
+			req.angular_speed = req.angular_speed * m_learning_rate + m_last_angular_speed * (1-m_learning_rate);
+		}
+		m_last_angular_speed = req.angular_speed;
+	}
+	
 	float vel_limit = 0.0;
 
 	float angle_width = max_width * in.laser.data.angle_increment;
@@ -179,6 +205,13 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
 // 	DEBUG_T(valley_last_index,)
 // 	DEBUG_T(angle_width,)
 #ifdef	TURBO_MODE
+	if(angle_width >= DEG_TO_RAD(45.0)) {
+		vel_limit = 0.7;
+	} else if(angle_width >= DEG_TO_RAD(30.0)) {
+		vel_limit = 0.4;
+	} else {
+		vel_limit = 0.2;
+	}
 #else
 	if(angle_width >= DEG_TO_RAD(45.0)) {
 		vel_limit = 0.4;
@@ -192,8 +225,9 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
 	req.linear_speed = cos(free_direction)*vel_limit;
 	req.linear_speed_set = true;
 
-// 	DEBUG_T(req.linear_speed,)
-// 	DEBUG_T(req.angular_speed,)
+	DEBUG_T(req.linear_speed,)
+	DEBUG_T(req.angular_speed,)
+	DEBUG_P("",)
 
 	return req;
 }

@@ -12,10 +12,11 @@
     <param name="processed_ls_topic" value="/robot_0/processed_ls" />
     <param name="robot_control_service" value="/robot_0/robot_control_service" />
     <param name="CA_alpha" value="0.01" />
-    <param name="CA_threshold" value="0.3" />
-    <param name="SITM_threshold" value="0.2" />
-    <param name="SITM_valley_threshold" value="50" /> 
+    <param name="CA_threshold" value="0.0.25" />
+    <param name="SITM_threshold" value="0.4" />
+    <param name="SITM_valley_threshold" value="20" /> 
     <param name="SITM_alpha" value="2.0" /> 
+    <param name="SITM_learning_rate" value="0.9" /> 
     <param name="SITM_nl_n" value="1" /> 
   </node>
   <node pkg="pteam_p2os" type="control_node" name="control_node" >

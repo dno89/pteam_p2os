@@ -61,12 +61,12 @@ window
 floorplan
 ( 
   name "pal1"
-  bitmap "palazzina1.pgm"
+  bitmap "palazzina1_obstacle2.pgm"
 #  size [11.0 25.0 0.5]
   size [13.75 35.77 0.5]
   pose [0.0 0.0 0 0.00 ]
 )
 
-pioneer( pose [ 0.80 10.00 0 -90.00 ] name "pioneer3dx" color "blue")
+pioneer( pose [ 0.80 17.00 0 -90.00 ] name "pioneer3dx" color "blue")
 
 pioneer( pose [ -280.80 -5.00 0 -90.00 ] name "dummy" color "red")
