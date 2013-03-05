@@ -153,21 +153,18 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
 		//the weight parameter
 		free_direction = NLWAverage(fi, li, w_fi, w_li, m_nl_n) * in.laser.data.angle_increment + in.laser.data.angle_min;
 		
-// 		if(m_memory_effect && !isnan(m_last_free_direction)) {
-// 			//memory effect: low pass filter to ammortize the oscillations
-// 			free_direction = m_learning_rate*free_direction + (1.0 - m_learning_rate) * m_last_free_direction;
-// 		}
-		
+		///TEST
+		double old_free_dir = ((valley_first_index + valley_last_index) / 2)*in.laser.data.angle_increment + in.laser.data.angle_min;
 		DEBUG_P("Finding the free direction",)
 		DEBUG_T(fi,)
 		DEBUG_T(li,)
-		DEBUG_T(m_polar_histogram[fi],)
-		DEBUG_T(m_polar_histogram[li],)
 		DEBUG_T(w_fi,)
 		DEBUG_T(w_li,)
 		DEBUG_T(NLWAverage(fi, li, w_fi, w_li, m_nl_n),)
 		DEBUG_T(RAD_TO_DEG(free_direction),)
+		DEBUG_T(RAD_TO_DEG(old_free_dir),)
 		
+		///FIXME: remove this
 // 		free_direction = ((valley_first_index + valley_last_index) / 2)*in.laser.data.angle_increment + in.laser.data.angle_min;
 	}
 	
