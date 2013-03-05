@@ -30,6 +30,8 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 	Target t;
 	SimplePose pose = OdomToSimplePose(in.odometry.pose.pose);
 	if(detectCircle(in, &t)) {
+		DEBUG_P("Circle detected!", ####)
+		
 		//a circle detected
 		if(m_have_hypothesis) {
 			//circle detected and hypothesis
@@ -93,6 +95,8 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 			m_gage = 0;
 		}
 	} else {
+		DEBUG_P("No Circle detected..", ####)
+		
 		//no circle detected
 		if(m_have_hypothesis) {
 			//no circle detected and hypothesis
@@ -135,6 +139,8 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 	DEBUG_T(m_hage,)
 	DEBUG_T(m_ghost_mode,)
 	DEBUG_T(m_gage,)
+	DEBUG_P("",)
+	DEBUG_P("",)
 	DEBUG_P("",)
 
 	*subsume = false;

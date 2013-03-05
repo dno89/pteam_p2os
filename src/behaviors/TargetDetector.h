@@ -49,7 +49,7 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	const double m_accept_threshold2;	//sqared distance threshold to accept an observation
 	
 	////magic numbers
-	static int min_age() { return 3; }
+	static int min_age() { return 0; }
 	static int max_ghost_age() { return 10; }
 public:
 	TargetDetector(double range_thr, double taget_radius, double target_radius_toll, double accpet_threshold);
