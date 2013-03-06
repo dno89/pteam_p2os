@@ -14,7 +14,10 @@ CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-target_detector.log")
 using namespace pteam;
 
 TargetDetector::TargetDetector ( double range_thr, double target_radius, double target_radius_toll, double accept_threshold ) : range_thr_(range_thr), target_radius_(target_radius), target_radius_toll_(target_radius_toll), m_have_hypothesis(false), m_ghost_mode(false), m_hage(0), m_gage(0), m_last_pose(), m_hypothesis(), m_accept_threshold2(accept_threshold) {
-	
+	//add property to the shared map
+	base_type::AddProperty("TARGET_DETECTED", bool(false));
+	base_type::AddProperty("TARGET_POSITION", Point2d());
+	base_type::AddProperty("TARGET_IN_RANGE", bool(false));
 }
 
 
@@ -28,14 +31,14 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 
 	///TODO: localize and track here!!
 	Target t;
-	SimplePose pose = OdomToSimplePose(in.odometry.pose.pose);
+	SimplePose cur_pose = OdomToSimplePose(in.odometry.pose.pose);
 	if(detectCircle(in, &t)) {
 		DEBUG_P("Circle detected!", ####)
 		
 		//a circle detected
 		if(m_have_hypothesis) {
 			//circle detected and hypothesis
-			if(TargetDistance2(t, RotateTarget(m_hypothesis, m_last_pose, pose)) <= m_accept_threshold2) {
+			if(TargetDistance2(t, RotateTarget(m_hypothesis, m_last_pose, cur_pose)) <= m_accept_threshold2) {
 				//hypothesis confirmed
 				DEBUG_P("Hypothesis confirmed!",####)
 				
@@ -43,7 +46,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 				m_gage = 0;
 				++m_hage;
 				m_hypothesis = t;
-				m_last_pose = pose;
+				m_last_pose = cur_pose;
 			} else {
 				//hypothesis and observation doesn't match
 				
@@ -60,7 +63,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 						m_hage = 0;
 						m_ghost_mode = false;
 					}
-				} else if(m_hage >= min_age()) {
+				} else if(m_hage >= min_age_to_ghost()) {
 					
 					DEBUG_P("Entering ghost mode!",####)
 					
@@ -112,7 +115,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 					m_hage = 0;
 					m_ghost_mode = false;
 				}
-			} else if(m_hage >= min_age()) {
+			} else if(m_hage >= min_age_to_ghost()) {
 				
 				DEBUG_P("Entering ghost mode!",####)
 				
@@ -132,8 +135,33 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 			//nothing to do
 		}
 	}
+
+	if(m_have_hypothesis && m_hage > min_age_to_confirm()) {
+		//set and update the flags
+		SetProperty("TARGET_DETECTED", bool(false));
+		
+		//the current (estimated) position
+		Point2d pos;
+		
+		if(!m_ghost_mode) {
+			//the last perception has a valid position
+			pos = m_hypothesis;
+		} else {
+			//ghost mode, we need to rotate the last position
+			pos = RotateTarget(m_hypothesis, m_last_pose, cur_pose);
+		}
+		
+		//publish the pose
+		SetProperty("TARGET_POSITION", Point2d(pos));
+		
+	} else {
+		//clear the flag
+		SetProperty("TARGET_DETECTED", bool(false));
+		SetProperty("TARGET_IN_RANGE", bool(false));
+	}
 	
-	if(m_have_hypothesis && m_ghost_mode) {
+	///TEST
+	if(m_have_hypothesis || m_ghost_mode) {
 		DEBUG_T(m_have_hypothesis,)
 		DEBUG_TL(m_hypothesis,)
 		DEBUG_TL(m_last_pose,)
@@ -141,10 +169,12 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		DEBUG_T(m_ghost_mode,)
 		DEBUG_T(m_gage,)
 		DEBUG_P("",)
-		DEBUG_P("",)
 	}
+	DEBUG_T(ReadProperty<bool>("TARGET_DETECTED"),)
+	DEBUG_T(ReadProperty<bool>("TARGET_IN_RANGE"),)
+	DEBUG_T(ReadProperty<Point2d>("TARGET_POSITION"),)
 	DEBUG_P("",)
-
+	
 	*subsume = false;
 	pteam_p2os::RobotControlRequest req;
 	rstRobotControlRequest(&req);
@@ -161,7 +191,7 @@ bool TargetDetector::detectCircle ( const pteam_p2os::Perception& in, Target* t 
 	// 	ROS_INFO("Searching intervals");
 	interval_vector intervals;
 	splitScan(intervals, in); 
-	// 	ROS_INFO("\nNew scan: found %d intervals",intervals.size());
+// 	ROS_INFO("\nFound %d intervals",intervals.size());
 	
 	// Visits all intervals 
 	geometry_msgs::Point center_best;
@@ -172,8 +202,7 @@ bool TargetDetector::detectCircle ( const pteam_p2os::Perception& in, Target* t 
 		geometry_msgs::Point center;
 		double r;
 		extractCircle2(in, *beg,center,r);
-		// 		ROS_INFO("interval %d,%d: center (%f,%f), radius %f",
-		// 				 beg->first,beg->second,center.x,center.y,r);
+// 				ROS_INFO("interval %d,%d: center (%f,%f), radius %f", beg->first,beg->second,center.x,center.y,r);
 		if (::fabs(r - target_radius_) < ::fabs(r_best - target_radius_)) {
 			center_best = center;
 			r_best = r;
@@ -181,7 +210,7 @@ bool TargetDetector::detectCircle ( const pteam_p2os::Perception& in, Target* t 
 	}
 	
 	if (::fabs(r_best - target_radius_) < target_radius_toll_ * target_radius_) {
-		ROS_INFO("Best target\n best center (%f,%f), radius %f",center_best.x,center_best.y,r_best);
+// 		ROS_INFO("Best target\n best center (%f,%f), radius %f",center_best.x,center_best.y,r_best);
 		t->x = center_best.x;
 		t->y = center_best.y;
 		t->radius = r_best;
@@ -247,7 +276,8 @@ void TargetDetector::extractCircle2(const pteam_p2os::Perception& in, const inte
 		center.x += x;
 		center.y += y;
 	}
-	res = (A.transpose() * A).inverse() * A.transpose() * b;
+	// 	res = (A.transpose() * A).inverse() * A.transpose() * b;
+	res = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);;
 	//    std::cout << "\ninterval " << ip.first << "," << ip.second << std::endl;
 	//    std::cout << "mean " << center.x/num << "," << center.y/num << std::endl;
 	//    std::cout << "res:\n" << res << std::endl;

@@ -40,6 +40,9 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 /********************************************************************
 * 						MY	STUFF									*
 ********************************************************************/
+	////typedef
+	typedef CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> base_type;
+	
 	bool m_have_hypothesis;	//whether there is a current hypothesis
 	Target m_hypothesis;		//the last position detected for target
 	SimplePose m_last_pose;	//pose associated with last hypothesis
@@ -49,7 +52,8 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	const double m_accept_threshold2;	//sqared distance threshold to accept an observation
 	
 	////magic numbers
-	static int min_age() { return 0; }
+	static int min_age_to_ghost() { return 4; }
+	static int min_age_to_confirm() { return 8; }
 	static int max_ghost_age() { return 10; }
 public:
 	TargetDetector(double range_thr, double taget_radius, double target_radius_toll, double accpet_threshold);

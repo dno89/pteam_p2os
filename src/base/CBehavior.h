@@ -99,6 +99,9 @@ public:
 };
 
 template<typename InputT, typename OutputT>
+std::map<std::string, boost::any> pteam::CBehavior<InputT, OutputT>::shared_map;
+
+template<typename InputT, typename OutputT>
 CBehavior<InputT, OutputT>::~CBehavior() {}
 
 }

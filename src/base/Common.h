@@ -146,7 +146,9 @@ inline double NLWAverage(double a, double b, double Wa, double Wb, int n) {
 	return (b-a)/2.0 * std::pow(-(2*alpha - 1), 2*n+1) + (a+b)/2.0;
 }
 
-
+/******************************************************************************
+ * 							POINTS												*
+ * ****************************************************************************/
 /**
  * @struct Point2
  * 
@@ -162,8 +164,39 @@ struct Point2 {
 	Point2(T x_ = T(0), T y_ = T(0)) : x(x_), y(y_) {}
 };
 
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const Point2<T>& p) {
+	out << "x: " << p.x << "\ny: " << p.y;
+	return out;
+}
+
 typedef Point2<double> Point2d;
 typedef Point2<float> Point2f;
+
+
+template<typename T>
+struct Point3 {
+	typedef T base_type;
+	
+	Point3(base_type x_ = base_type(0), base_type y_ = base_type(0), base_type z_ = base_type(0)) :
+	x(x_), y(y_), z(z_) {}
+	
+	////data
+	T x, y, z;
+};
+
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const Point3<T>& p) {
+	out << "x: " << p.x << "\ny: " << p.y << "\nz: " << p.z;
+	return out;
+}
+
+typedef Point3<double> Point3d;
+typedef Point3<float> Point3f;
+
+/******************************************************************************
+ * 							TARGET												*
+ * ****************************************************************************/
 
 struct Target : public Point2d {
 	////data
@@ -181,6 +214,10 @@ std::ostream& operator<<(std::ostream& out, const Target& t) {
 	return out;
 }
 
+/******************************************************************************
+ * 							POSE												*
+ * ****************************************************************************/
+
 struct SimplePose : Point2d {
 	////data
 	base_type theta;
@@ -193,6 +230,9 @@ std::ostream& operator<<(std::ostream& out, const SimplePose& t) {
 	return out;
 }
 
+/******************************************************************************
+ * 							SUPPORT FUNCTIONS									*
+ * ****************************************************************************/
 SimplePose OdomToSimplePose(const geometry_msgs::Pose& pose) {
 // 	double theta = atan2(2.0*(pose.orientation.x*pose.orientation.w + pose.orientation.y*pose.orientation.z), 1.0 - 2.0*(pose.orientation.z*pose.orientation.z + pose.orientation.w*pose.orientation.w));
 	double theta = asin(2.0*pose.orientation.z*pose.orientation.w);
@@ -226,7 +266,7 @@ Target RotateTarget(const Target& t, const SimplePose& old_pose, const SimplePos
 	
 	Eigen::Vector3d new_t = rot_matrix*p;
 	
-	return Target(p[0], p[1], t.radius);
+	return Target(new_t[0], new_t[1], t.radius);
 }
 
 }
