@@ -10,6 +10,8 @@
 
 #include <base/CBehavior.h>
 #include <base/Common.h>
+#include "Circle.h"
+#include <base/RANSAC.h>
 #include <pteam_p2os/Perception.h>
 #include <pteam_p2os/RobotControl.h>
 #include <geometry_msgs/Pose.h>

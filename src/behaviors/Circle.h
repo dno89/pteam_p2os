@@ -82,7 +82,9 @@ public:
 	
 	static int NPoints() { return 3; }
 	
-	
+	double operator()(const point_type& p) {
+		return std::sqrt(std::abs((p.x - m_Center.x)*(p.x - m_Center.x) + (p.y - m_Center.y)*(p.y - m_Center.y) - m_dRadius*m_dRadius));
+	}
 
 private:
 	double CalcCircle(point_type *pt1, point_type *pt2, point_type *pt3) {
@@ -95,7 +97,7 @@ private:
 // 			TRACE("Calc cirlce \n");
 			this->m_Center.x= 0.5*(pt2->x + pt3->x);
 			this->m_Center.y= 0.5*(pt1->y + pt2->y);
-			this->m_Center.z= pt1->z;
+// 			this->m_Center.z= pt1->z;
 			this->m_dRadius= length(m_Center,*pt1);		// calc. radius
 			//		TRACE(" Center: %f %f %f\n", m_Center.x(), m_Center.y(), m_Center.z());
 			//		TRACE(" radius: %f %f %f\n", length(&m_Center,pt1), length(&m_Center,pt2),length(&m_Center,pt3));
@@ -115,7 +117,7 @@ private:
 		this->m_Center.x= (aSlope*bSlope*(pt1->y - pt3->y) + bSlope*(pt1->x + pt2 ->x)
 		- aSlope*(pt2->x+pt3->x) )/(2* (bSlope-aSlope) );
 		this->m_Center.y = -1*(m_Center.x - (pt1->x+pt2->x)/2)/aSlope +  (pt1->y+pt2->y)/2;
-		this->m_Center.z= pt1->z;
+// 		this->m_Center.z= pt1->z;
 		
 		this->m_dRadius= length(m_Center,*pt1);		// calc. radius
 		//	TRACE(" Center: %f %f %f\n", m_Center.x(), m_Center.y(), m_Center.z());
@@ -163,7 +165,7 @@ private:
 	}
 	
 	double m_dRadius;
-	Point m_Center;
+	point_type m_Center;
 };
 
 std::ostream& operator<<(std::ostream& out, const Circle& c) {
