@@ -117,6 +117,7 @@ public:
 		
 		///FIXME: reenable SITM
 		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
+		m_behaviors_manager.AddBehavior(1, new pteam::MoveThroughwardGoal(2.0));
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }
