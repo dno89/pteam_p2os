@@ -95,7 +95,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 			m_gage = 0;
 		}
 	} else {
-		DEBUG_P("No Circle detected..", ####)
+		DEBUG_P("--", ####)
 		
 		//no circle detected
 		if(m_have_hypothesis) {
@@ -133,14 +133,16 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		}
 	}
 	
-	DEBUG_T(m_have_hypothesis,)
-	DEBUG_TL(m_hypothesis,)
-	DEBUG_TL(m_last_pose,)
-	DEBUG_T(m_hage,)
-	DEBUG_T(m_ghost_mode,)
-	DEBUG_T(m_gage,)
-	DEBUG_P("",)
-	DEBUG_P("",)
+	if(m_have_hypothesis && m_ghost_mode) {
+		DEBUG_T(m_have_hypothesis,)
+		DEBUG_TL(m_hypothesis,)
+		DEBUG_TL(m_last_pose,)
+		DEBUG_T(m_hage,)
+		DEBUG_T(m_ghost_mode,)
+		DEBUG_T(m_gage,)
+		DEBUG_P("",)
+		DEBUG_P("",)
+	}
 	DEBUG_P("",)
 
 	*subsume = false;

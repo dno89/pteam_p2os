@@ -27,6 +27,26 @@ protected:
 	}
 	
 	template<typename T>
+	void SetProperty(const std::string& ID, const T& value) {
+		//check whether the property exists
+		if(shared_map.count(ID) == 0) {
+			//the property doesn't exist
+			throw std::runtime_error("CConfigurable::SetProperty ERROR: property "+ID+" doesn't exist!\n");
+		}
+		
+		//type check
+		if(typeid(T) != shared_map[ID].type()) {
+			//type are different
+			throw std::runtime_error("CConfigurable::SetProperty ERROR: \"value\" has type " + 
+			std::string(typeid(value).name()) + 
+			", but \"" + ID + "\" has type " + std::string(shared_map[ID].type().name()) + "!\n");
+		}
+		
+		//everything is fine, do the assignment
+		shared_map[ID] = value;
+	}
+	
+	template<typename T>
 	T ReadProperty(const std::string& ID) const {
 		//check whether the property exists
 		if(shared_map.count(ID) == 0) {

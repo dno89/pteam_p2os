@@ -100,7 +100,7 @@ public:
 		DEBUG_T(CA_threshold,)
 		
 		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
-		m_behaviors_manager.AddBehavior(0, new pteam::TargetDetector(0.15, 0.10, 0.05, 0.05));
+		m_behaviors_manager.AddBehavior(0, new pteam::TargetDetector(0.10, 0.10, 0.05, 0.05));
 		
 		//TODO add target detector
 		double SITM_threshold, SITM_alpha, SITM_learning_rate;
@@ -115,6 +115,7 @@ public:
 		DEBUG_T(SITM_valley_threshold,)
 		DEBUG_T(SITM_nl_n,)
 		
+		///FIXME: reenable SITM
 		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
 	}
 	
