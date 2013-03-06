@@ -13,7 +13,7 @@ CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-target_detector.log")
 
 using namespace pteam;
 
-TargetDetector::TargetDetector ( double range_thr, double target_radius, double target_radius_toll, double accept_threshold ) : range_thr_(range_thr), target_radius_(target_radius), target_radius_toll_(target_radius_toll), m_have_hypothesis(false), m_ghost_mode(false), m_hage(0), m_gage(0), m_last_pose(), m_hypothesis(), m_accept_threshold2(accept_threshold) {
+TargetDetector::TargetDetector ( double range_thr, double target_radius, double target_radius_toll, double accept_threshold ) : m_range_threshold(range_thr), m_target_radius(target_radius), m_target_radius_tolerance(target_radius_toll), m_have_hypothesis(false), m_ghost_mode(false), m_hage(0), m_gage(0), m_last_pose(), m_hypothesis(), m_accept_threshold2(accept_threshold), m_RANSAC(max_RANSAC_iteration(), min_consensus(), RANSAC_distance_threshold(), 100) {
 	//add property to the shared map
 	base_type::AddProperty("TARGET_DETECTED", bool(false));
 	base_type::AddProperty("TARGET_POSITION", Point2d());
@@ -203,13 +203,13 @@ bool TargetDetector::detectCircle ( const pteam_p2os::Perception& in, Target* t 
 		double r;
 		extractCircle2(in, *beg,center,r);
 // 				ROS_INFO("interval %d,%d: center (%f,%f), radius %f", beg->first,beg->second,center.x,center.y,r);
-		if (::fabs(r - target_radius_) < ::fabs(r_best - target_radius_)) {
+		if (::fabs(r - m_target_radius) < ::fabs(r_best - m_target_radius)) {
 			center_best = center;
 			r_best = r;
 		}
 	}
 	
-	if (::fabs(r_best - target_radius_) < target_radius_toll_ * target_radius_) {
+	if (::fabs(r_best - m_target_radius) < m_target_radius_tolerance * m_target_radius) {
 // 		ROS_INFO("Best target\n best center (%f,%f), radius %f",center_best.x,center_best.y,r_best);
 		t->x = center_best.x;
 		t->y = center_best.y;
@@ -243,7 +243,7 @@ void TargetDetector::splitScan(interval_vector& intervals, const pteam_p2os::Per
 // 	ROS_INFO("  scanning ranges from %d to %d",imin,imax);
 	for (unsigned int i = imin; i < in.laser.data.ranges.size() && i < imax; ++i) {
 		if (!isnan(in.laser.data.ranges.at(i))) {    
-			if (::fabs(in.laser.data.ranges.at(i) - rangePrev) > range_thr_) {
+			if (::fabs(in.laser.data.ranges.at(i) - rangePrev) > m_range_threshold) {
 				tmp.second = i;
 				intervals.push_back(tmp);
 // 				std::cout << "range discontinuity at " << i << ": " << in.laser.data.ranges.at(i) 
@@ -286,4 +286,47 @@ void TargetDetector::extractCircle2(const pteam_p2os::Perception& in, const inte
 	center.z = 0.0;
 	r = ::sqrt(res(R) + center.x*center.x + center.y*center.y);
 	//    std::cout << "center " << center.x << "," << center.y << std::endl;
+}
+
+bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  {
+	interval_vector intervals;
+	//split scan into intervals
+	splitScan(intervals, in);
+	
+	DEBUG_T(intervals.size(),)
+	Circle best_model;
+	
+	//for each scan interval
+	for(int ii = 0; ii < intervals.size(); ++ii) {
+		std::vector<Point2d> points;
+		
+		for(int jj = intervals[ii].first; jj <= intervals[ii].second; ++jj) {
+			if(isnan(in.laser.data.ranges[jj])) {
+				continue;
+			}
+			
+			double theta = jj*in.laser.data.angle_increment + in.laser.data.angle_min;
+			points.push_back(Point2d(in.laser.data.ranges[jj]*cos(theta), in.laser.data.ranges[jj]*sin(theta)));
+		}
+		
+		int total_points = points.size();
+		
+		if(total_points < min_consensus()) {
+			//the interval doesn't contain enough points
+			continue;
+		}
+		
+		//load point in RANSAC
+		m_RANSAC.LoadPoints(points.begin(), points.end());
+		
+		points.clear();
+		Circle ransac_model = m_RANSAC.Run(&points);
+		//now points contain only the consensus points
+		
+		//validity check
+		if(ransac_model.GetRadius() != -1 && points.size() >= consensus_perc()*total_points && ransac_model.GetCenter().x >= 0.0) {
+			//this is a valid model
+			///TODO: faccio il confronto sul raggio e prendo quello che più si avvicina al raggio vero
+		}
+	}
 }
