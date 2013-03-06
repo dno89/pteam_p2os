@@ -18,7 +18,7 @@ namespace pteam {
 	
 class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {
 /********************************************************************
-* 						DARIO STUFF									*
+* 						DARIO'S STUFF								*
 ********************************************************************/
 	////typedefs
 	typedef std::pair<int,int> interval_type;

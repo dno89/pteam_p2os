@@ -100,7 +100,7 @@ public:
 		DEBUG_T(CA_threshold,)
 		
 		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
-		m_behaviors_manager.AddBehavior(0, new pteam::TargetDetector(0.2, 0.15, 0.3, 0.05));
+		m_behaviors_manager.AddBehavior(0, new pteam::TargetDetector(0.15, 0.10, 0.05, 0.05));
 		
 		//TODO add target detector
 		double SITM_threshold, SITM_alpha, SITM_learning_rate;

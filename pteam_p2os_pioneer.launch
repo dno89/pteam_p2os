@@ -3,7 +3,7 @@
     <param name="host" value="160.78.28.127" />
    </node>
   <node pkg="p2os_driver" type="p2os" name="p2os">
-    <param name="port" value="/dev/ttyUSB0">
+    <param name="port" value="/dev/ttyUSB0"/>
   </node>
   <node pkg="gripper_driver" type="gripper" name="my_gripper" />
   <node pkg="p2os_dashboard" type="p2os_dashboard" name="p2os_dashboard" />
@@ -22,7 +22,7 @@
     <param name="robot_control_service" value="/robot_0/robot_control_service" />
     <param name="CA_alpha" value="0.01" />
     <param name="CA_threshold" value="0.3" />
-    <param name="SITM_threshold" value="0.2" />
+    <param name="SITM_threshold" value="0.4" />
     <param name="SITM_valley_threshold" value="50" /> 
     <param name="SITM_alpha" value="2.0" /> 
     <param name="SITM_learning_rate" value="0.9" /> 
