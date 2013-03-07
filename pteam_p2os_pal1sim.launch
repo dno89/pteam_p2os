@@ -19,6 +19,7 @@
     <param name="SITM_alpha" value="2.0" /> 
     <param name="SITM_learning_rate" value="0.7" /> 
     <param name="SITM_nl_n" value="1" /> 
+    <param name="TD_ball_radius" value="1.0" /> 
   </node>
   <node pkg="pteam_p2os" type="control_node" name="control_node" >
     <param name="robot_control_service" value="/robot_0/robot_control_service" />

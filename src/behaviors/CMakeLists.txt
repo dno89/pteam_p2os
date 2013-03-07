@@ -9,6 +9,7 @@ rosbuild_add_library(move_throughward_goal MoveThroughwardGoal.cpp)
 rosbuild_add_library(stay_in_the_middle StayInTheMiddle.cpp)
 
 target_link_libraries(stay_in_the_middle boost_iostreams boost_system boost_filesystem)
+target_link_libraries(target_detector boost_iostreams boost_system boost_filesystem)
 
 set(BEHAVIOR_LINK_LIBRARIES target_detector " " take_the_ball " " collision_avoidance " " move_throughward_goal " " stay_in_the_middle PARENT_SCOPE)
 

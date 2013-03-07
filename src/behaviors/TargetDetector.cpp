@@ -20,9 +20,10 @@ TargetDetector::TargetDetector ( double range_thr, double target_radius, double 
 	base_type::AddProperty("TARGET_IN_RANGE", bool(false));
 	
 #ifndef NDEBUG
-	m_gp.set_style("points");
-	m_gp.set_xrange(-6, 6);
-	m_gp.set_yrange(0, 6);
+// 	m_gp.set_style("points");
+// 	m_gp.set_xrange(-6, 6);
+// 	m_gp.set_yrange(0, 6);
+	m_gp << "set xrange [-2:2]\nset yrange[0:3]\n";
 #endif
 }
 
@@ -35,7 +36,9 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 // 	DEBUG_T(sp.y,)
 // 	DEBUG_T(RAD_TO_DEG(sp.theta),);
 #ifndef NDEBUG
-	m_gp.reset_plot();
+// 	m_gp.reset_plot();
+	std::vector<std::pair<double, double>> cdv, ch;
+	m_gp.clearTmpfiles();
 #endif
 
 	///TODO: localize and track here!!
@@ -47,10 +50,11 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		
 #ifndef NDEBUG
 		{
-			std::vector<double> x, y;
-			x.push_back(-t.y);
-			y.push_back(t.x);
-			m_gp.plot_xy(x, y, "detected circle");
+			cdv.push_back(std::make_pair(-t.y, t.x));
+// 			y.push_back(t.x);
+			m_gp << "plot '-' with points linecolor rgb \"red\"\n";
+			m_gp.send(cdv);
+// 			m_gp.plot_xy(x, y, "detected circle");
 		}
 #endif
 		
@@ -157,7 +161,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 
 	if(m_have_hypothesis && m_hage > min_age_to_confirm()) {
 		//set and update the flags
-		SetProperty("TARGET_DETECTED", bool(false));
+		SetProperty("TARGET_DETECTED", bool(true));
 		
 		//the current (estimated) position
 		Point2d pos;
@@ -171,15 +175,19 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		}
 		
 		//publish the pose
-		SetProperty("TARGET_POSITION", Point2d(pos));
+		SetProperty("TARGET_POSITION", pos);
 		
 #ifndef NDEBUG
 		{
-			std::vector<double> x, y;
-			
-			x.push_back(-pos.y);
-			y.push_back(pos.x);
-			m_gp.plot_xy(x, y, "current hypothesis");
+			ch.push_back(std::make_pair(-pos.y, pos.x));
+			// 			y.push_back(t.x);
+			m_gp << "replot '-' with points linecolor rgb \"green\"\n";
+			m_gp.send(cdv).send(ch);
+// 			std::vector<double> x, y;
+// 			
+// 			x.push_back(-pos.y);
+// 			y.push_back(pos.x);
+// 			m_gp.plot_xy(x, y, "current hypothesis");
 		}
 #endif
 		
@@ -188,6 +196,10 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		SetProperty("TARGET_DETECTED", bool(false));
 		SetProperty("TARGET_IN_RANGE", bool(false));
 	}
+	
+#ifndef NDEBUG
+	m_gp.flush();
+#endif
 	
 	///TEST
 	if(m_have_hypothesis || m_ghost_mode) {
@@ -328,7 +340,7 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 	//split scan into intervals
 	splitScan(intervals, in);
 	
-	DEBUG_T(intervals.size(),)
+// 	DEBUG_T(intervals.size(),)
 	
 // 	Circle best_model;
 	std::vector<std::pair<Circle, double>> models;
@@ -337,7 +349,7 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 	for(int ii = 0; ii < intervals.size(); ++ii) {
 		std::vector<Point2d> points;
 		
-		DEBUG_P("Processing interval from " << intervals[ii].first << " to " << intervals[ii].second,)
+// 		DEBUG_P("Processing interval from " << intervals[ii].first << " to " << intervals[ii].second,)
 		
 		for(int jj = intervals[ii].first; jj <= intervals[ii].second; ++jj) {
 			if(isnan(in.laser.data.ranges[jj])) {
@@ -352,7 +364,7 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 		
 		if(total_points < min_consensus()) {
 			//the interval doesn't contain enough points
-			DEBUG_P("Not enough point in this interval! number of points: " << total_points,)
+// 			DEBUG_P("Not enough point in this interval! number of points: " << total_points,)
 			continue;
 		}
 		
@@ -364,12 +376,13 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 		try {
 			ransac_model = m_RANSAC.Run(&points);
 		} catch(std::runtime_error& e) {
-			DEBUG_T(e.what(),)
+// 			DEBUG_T(e.what(),)
+// 			DEBUG_P("No suitable model found",)
 			continue;
 		}
 		//now points contain only the consensus points
 		
-		DEBUG_T(ransac_model,)
+// 		DEBUG_T(ransac_model,)
 		
 		//validity check
 		if(	ransac_model.GetRadius() != -1 &&

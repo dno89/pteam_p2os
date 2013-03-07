@@ -17,7 +17,7 @@
 #include <base/RANSAC.h>
 
 #ifndef NDEBUG
-#include <base/gnuplot_i.hpp>
+#include <base/gnuplot-iostream.h>
 #endif
 
 namespace pteam {
@@ -58,9 +58,9 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	const double m_accept_threshold2;	//sqared distance threshold to accept an observation
 	
 	////magic numbers
-	static int min_age_to_ghost() { return 4; }
-	static int min_age_to_confirm() { return 8; }
-	static int max_ghost_age() { return 10; }
+	static int min_age_to_ghost() { return 3; }
+	static int min_age_to_confirm() { return 6; }
+	static int max_ghost_age() { return 5; }
 	
 	////detection
 	RANSAC<Point2d, Circle> m_RANSAC;
@@ -70,13 +70,19 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	////debug
 #ifndef	NDEBUG	
 #warning @ TargetDetector DRAWING ENABLED
-	GnuplotHL m_gp;
+	Gnuplot m_gp;
 #endif
 	
 	////magic numbers
 	static int min_consensus() { return 10; }
 	static int max_RANSAC_iteration() { return 100; }
-	static double RANSAC_distance_threshold() { return 0.02; }
+	static double RANSAC_distance_threshold() {
+#ifdef ON_SIMULATION
+		return 0.1;
+#else
+		return 0.02; 
+#endif	//ON_SIMULATION
+	}
 	static double consensus_perc() { return 0.9; }
 public:
 	TargetDetector(double range_thr, double taget_radius, double target_radius_toll, double accpet_threshold);
