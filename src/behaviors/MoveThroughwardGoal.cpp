@@ -38,7 +38,7 @@ pteam_p2os::RobotControlRequest MoveThroughwardGoal::operator() ( const pteam_p2
   if(target_detected) {
     ball_coord = ReadProperty<Point2d>("TARGET_POSITION");
     ball_angle = RAD_TO_DEG(atan2(ball_coord.y, ball_coord.x));
-    req.affinity = 1.5;
+    req.affinity = affinity();
     //controllo la posizione della palla
     if((ball_angle > m_threshold_angle) && (ball_angle < -m_threshold_angle)) {
       //la palla non è davanti a me
