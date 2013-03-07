@@ -168,17 +168,30 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				//stop the robot
 				req.linear_speed = 0.0;
 				req.linear_speed_set = true;
-				req.angular_speed = 0.0;
-				req.angular_speed_set = true;
+// 				req.angular_speed = 0.0;
+// 				req.angular_speed_set = true;
 				
+				tp = ReadProperty<Point2d>("TARGET_POSITION");
+				theta = atan2(tp.y, tp.x);
 				
-				//lower the gripper
-				req.gripper_move_set = true;
-				req.gripper_move_down = true;
-				//save current time
-				m_start_time = high_resolution_clock::now();
-				//go to the nex state
-				m_state = eSWaitingDown;
+				if(std::abs(theta) > angular_threshold()) {
+					//align the robot
+					req.angular_speed = sin(theta);
+					req.angular_speed_set = true;
+					
+				} else {
+					//stop it
+					req.angular_speed = 0.0;
+					req.angular_speed_set = true;
+					
+					//lower the gripper
+					req.gripper_move_set = true;
+					req.gripper_move_down = true;
+					//save current time
+					m_start_time = high_resolution_clock::now();
+					//go to the nex state
+					m_state = eSWaitingDown;
+				}
 				break;
 			case eSWaitingDown:
 				DEBUG_P("Waiting Down!",)

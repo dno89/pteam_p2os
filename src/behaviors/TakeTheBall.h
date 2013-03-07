@@ -45,6 +45,8 @@ class TakeTheBall : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotCo
 		return 0.1;
 #endif	//TURB+
 	}
+	
+	static double angular_threshold() { return DEG_TO_RAD(2.0); }
   
 public:
 	TakeTheBall();
