@@ -61,7 +61,7 @@ private:
 		eGCALZA = 1,
 		eGCABBASSA,
 		eGCFERMA,
-		eGCABBASSA_PALLA
+		eGCABBASSA_PALLA = 6
 	};
 	
 public:

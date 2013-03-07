@@ -9,6 +9,9 @@
 
 #include "TakeTheBall.h"
 #include "base/Common.h"
+#include "base/DMDebug.h"
+
+CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-taketheball.log");
 
 using namespace pteam;
 
@@ -45,15 +48,20 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
     //leggiamo le coordinate della palla:
     ball_coord = ReadProperty<Point2d>("TARGET_POSITION");
        
-      
+    DEBUG_P("TARGET IN RANGE")
+    
     //valuto se la forca è abbassata o no
     if(m_gripper_down) {
       //la forca è abbassata
 	
       distance = sqrt(pow(ball_coord.x, 2) + pow(ball_coord.y, 2));
 	
+      DEBUG_P("GRIPPER DOWN")
+      
       if(distance < 0.2) {
 	//la palla è sufficientemente vicina: la inforco e inizio ad alzare la forca sempre andando avanti:
+	DEBUG_P("GRIPPER START TAKE THE BALL AND MOVE UP")
+	
 	m_start_time = high_resolution_clock::now();
 	  
 	//do il comando al gripper di alzare
@@ -69,11 +77,15 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
 	//ho preso la palla controllo se la forca si è alzata: se si è alzata mi fermo
 	current_time = high_resolution_clock::now();
 	  
+	DEBUG_P("GRIPPER IS MOVING UP WITH THE BALL")
+	
 	interval = current_time - m_start_time;
 	if(interval.count() > (4.5*10e-6)) {
 	  //il gripper si è abbassato:
 	  req.linear_speed = 0.0;
 	  req.linear_speed_set = true;
+	  
+	  DEBUG_P("GRIPPER UP WITH THE BALL!!!!!!!!!!")
 	  
 	  ///HAPPY WIN =) SEEEEEE!!!	
 	}
@@ -82,11 +94,15 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
 	//valuto se il gripper si sta abbassando o se devo ancora dare il comando
 	if(m_command_requested) {
 	  //ho gia dato il comando: contollo se la forca ha finito di scendere
+	  DEBUG_P("GRIPPER IS MOVING DOWN")
+	  
 	  current_time = high_resolution_clock::now();
 	
 	  interval = current_time - m_start_time;
 	  if(interval.count() > (4.5*10e-6)) {
 	    //il gripper si è abbassato:
+	    DEBUG_P("GRIPPER DOWN")
+	    
 	    req.linear_speed = 0.2;
 	    req.linear_speed_set = true; 
 	     
@@ -95,6 +111,8 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
 	}
 	else {
 	  //il comando non è ancora stato dato
+	  DEBUG_P("GRIPPER START MOVING DOWN")
+	  
 	  m_start_time = high_resolution_clock::now();
 	
 	  //facciamo scendere la forca
