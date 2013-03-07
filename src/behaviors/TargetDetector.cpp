@@ -44,6 +44,9 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 	///TODO: localize and track here!!
 	Target t;
 	SimplePose cur_pose = OdomToSimplePose(in.odometry.pose.pose);
+	
+	DEBUG_T(cur_pose,)
+	
 // 	if(detectCircle(in, &t)) {
 	if(RANSACdetect(in, &t)) {
 		DEBUG_P("Circle detected!", ####)
@@ -113,7 +116,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 			//hypothesis age
 			m_hage = 1;
 			//pose in corrispondece of the hypothesis
-			m_last_pose = OdomToSimplePose(in.odometry.pose.pose);
+			m_last_pose = cur_pose/*OdomToSimplePose(in.odometry.pose.pose)*/;
 			//hypothesis
 			m_hypothesis = t;
 			//no ghost
