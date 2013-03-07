@@ -17,6 +17,8 @@
 #include <base/CBehavior.h>
 #include <base/BehaviorManager.h>
 #include <base/gnuplot-iostream.h>
+#include <base/Common.h>
+
 // #include <base/OutputMerger.h>
 // #include "base/Common.h"
 
@@ -24,8 +26,8 @@ CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-debug_node.log")
 
 using namespace std;
 
-class DebugNode {
-private:
+class DebugNode  {
+private:	
 	//the node handler
 	ros::NodeHandle m_nh;
 	
@@ -95,13 +97,21 @@ public:
 // 		m_gp.sendBinary(points);
 // 		m_gp.flush();
 // 		m_gp1 << "set xrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
-		m_gp1 << "set xrange [-6:6]\n";
-		m_gp1 << "set yrange [0:10]\n";
+		m_gp1 << "set xrange [-2:2]\n";
+		m_gp1 << "set yrange [0:5]\n";
 // 		m_gp1 << "set yrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
 // 		m_gp1 << "plot '-' with points linecolor rgb \"red\" title 'unfiltered data'\n";
 // 		m_gp1.send(points);
-		m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
-		m_gp1.send(processed_points);
+		if(ReadProperty<bool>("TARGET_DETECTED")) {
+			Point2d target = ReadProperty<Point2d>("TARGET_POSITION");
+			std::vector<std::pair<double, double>> tv;
+			tv.push_back(make_pair(-target.y, target.x));
+			m_gp1 << m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data', '-' with points linecolor rgb \"red\"\n";
+			m_gp1.send(processed_points).send(tv);
+		} else {
+			m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
+			m_gp1.send(processed_points);
+		}
 		m_gp1.flush();
 		
 // 		m_gp2 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";

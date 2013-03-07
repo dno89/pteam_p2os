@@ -23,7 +23,7 @@ TargetDetector::TargetDetector ( double range_thr, double target_radius, double 
 // 	m_gp.set_style("points");
 // 	m_gp.set_xrange(-6, 6);
 // 	m_gp.set_yrange(0, 6);
-	m_gp << "set xrange [-2:2]\nset yrange[0:3]\n";
+// 	m_gp << "set xrange [-2:2]\nset yrange[0:3]\n";
 #endif
 }
 
@@ -37,8 +37,8 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 // 	DEBUG_T(RAD_TO_DEG(sp.theta),);
 #ifndef NDEBUG
 // 	m_gp.reset_plot();
-	std::vector<std::pair<double, double>> cdv, ch;
-	m_gp.clearTmpfiles();
+// 	std::vector<std::pair<double, double>> cdv, ch;
+// 	m_gp.clearTmpfiles();
 #endif
 
 	///TODO: localize and track here!!
@@ -49,13 +49,13 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		DEBUG_P("Circle detected!", ####)
 		
 #ifndef NDEBUG
-		{
-			cdv.push_back(std::make_pair(-t.y, t.x));
-// 			y.push_back(t.x);
-			m_gp << "plot '-' with points linecolor rgb \"red\"\n";
-			m_gp.send(cdv);
-// 			m_gp.plot_xy(x, y, "detected circle");
-		}
+// 		{
+// 			cdv.push_back(std::make_pair(-t.y, t.x));
+// // 			y.push_back(t.x);
+// 			m_gp << "plot '-' with points linecolor rgb \"red\"\n";
+// 			m_gp.send(cdv);
+// // 			m_gp.plot_xy(x, y, "detected circle");
+// 		}
 #endif
 		
 		//a circle detected
@@ -177,18 +177,22 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		//publish the pose
 		SetProperty("TARGET_POSITION", pos);
 		
-#ifndef NDEBUG
-		{
-			ch.push_back(std::make_pair(-pos.y, pos.x));
-			// 			y.push_back(t.x);
-			m_gp << "replot '-' with points linecolor rgb \"green\"\n";
-			m_gp.send(cdv).send(ch);
-// 			std::vector<double> x, y;
-// 			
-// 			x.push_back(-pos.y);
-// 			y.push_back(pos.x);
-// 			m_gp.plot_xy(x, y, "current hypothesis");
+		if(std::sqrt(pos.x*pos.x + pos.y*pos.y) <= in_range_distance()) {
+			SetProperty("TARGET_IN_RANGE", bool(true));
 		}
+		
+#ifndef NDEBUG
+// 		{
+// 			ch.push_back(std::make_pair(-pos.y, pos.x));
+// 			// 			y.push_back(t.x);
+// 			m_gp << "replot '-' with points linecolor rgb \"green\"\n";
+// 			m_gp.send(cdv).send(ch);
+// // 			std::vector<double> x, y;
+// // 			
+// // 			x.push_back(-pos.y);
+// // 			y.push_back(pos.x);
+// // 			m_gp.plot_xy(x, y, "current hypothesis");
+// 		}
 #endif
 		
 	} else {
@@ -198,7 +202,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 	}
 	
 #ifndef NDEBUG
-	m_gp.flush();
+// 	m_gp.flush();
 #endif
 	
 	///TEST
@@ -215,6 +219,38 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 	DEBUG_T(ReadProperty<bool>("TARGET_IN_RANGE"),)
 	DEBUG_T(ReadProperty<Point2d>("TARGET_POSITION"),)
 	DEBUG_P("",)
+	
+#ifndef	NDEBUG
+	//new perception update the drawing
+	std::vector<std::pair<double, double>> processed_points;
+	for(int ii = 0; ii < in.laser.data.ranges.size(); ++ii) {
+		if(isnan(in.laser.data.ranges[ii])) {
+			continue;
+		}
+		
+		double theta = /*m_perc_msg.laser.data.angle_min + */ii*in.laser.data.angle_increment;
+		double x = in.laser.data.ranges[ii]*sin(theta);
+		double y = -in.laser.data.ranges[ii]*cos(theta);
+		
+		processed_points.push_back(std::make_pair(-y, x));
+	}
+	
+
+	m_gp1 << "set xrange [-2:2]\n";
+	m_gp1 << "set yrange [0:5]\n";
+	
+	if(ReadProperty<bool>("TARGET_DETECTED")) {
+		Point2d target = ReadProperty<Point2d>("TARGET_POSITION");
+		std::vector<std::pair<double, double>> tv;
+		tv.push_back(std::make_pair(-target.y, target.x));
+		m_gp1 << m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data', '-' with points linecolor rgb \"red\"\n";
+		m_gp1.send(processed_points).send(tv);
+	} else {
+		m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
+		m_gp1.send(processed_points);
+	}
+	m_gp1.flush();
+#endif
 	
 	*subsume = false;
 	pteam_p2os::RobotControlRequest req;

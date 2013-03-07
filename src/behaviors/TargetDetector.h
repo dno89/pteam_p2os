@@ -58,9 +58,9 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	const double m_accept_threshold2;	//sqared distance threshold to accept an observation
 	
 	////magic numbers
-	static int min_age_to_ghost() { return 3; }
-	static int min_age_to_confirm() { return 6; }
-	static int max_ghost_age() { return 5; }
+	static int min_age_to_ghost() { return 0; }
+	static int min_age_to_confirm() { return 10; }
+	static int max_ghost_age() { return 10; }
 	
 	////detection
 	RANSAC<Point2d, Circle> m_RANSAC;
@@ -70,7 +70,7 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	////debug
 #ifndef	NDEBUG	
 #warning @ TargetDetector DRAWING ENABLED
-	Gnuplot m_gp;
+	Gnuplot m_gp1;
 #endif
 	
 	////magic numbers
@@ -84,6 +84,7 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 #endif	//ON_SIMULATION
 	}
 	static double consensus_perc() { return 0.9; }
+	static double in_range_distance() { return 0.5; }
 public:
 	TargetDetector(double range_thr, double taget_radius, double target_radius_toll, double accpet_threshold);
 	virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );

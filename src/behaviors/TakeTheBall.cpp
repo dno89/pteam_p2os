@@ -57,20 +57,20 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
       distance = sqrt(pow(ball_coord.x, 2) + pow(ball_coord.y, 2));
       DEBUG_P("GRIPPER DOWN",)
       
-      if(distance < 0.2) {
+//       if(distance < 0.2) {
       if(distance < distance_ball()) {
-	//la palla è sufficientemente vicina: la inforco e inizio ad alzare la forca sempre andando avanti:
-	DEBUG_P("GRIPPER START TAKE THE BALL AND MOVE UP",)
-	
-	m_start_time = high_resolution_clock::now();
-	  
-	//do il comando al gripper di alzare
-	req.gripper_move_down = false;
-	req.gripper_move_set = true;
-	  
-	m_gripper_down = false;
-	m_take_ball = true;
-      }
+		//la palla è sufficientemente vicina: la inforco e inizio ad alzare la forca sempre andando avanti:
+		DEBUG_P("GRIPPER START TAKE THE BALL AND MOVE UP",)
+		
+		m_start_time = high_resolution_clock::now();
+		
+		//do il comando al gripper di alzare
+		req.gripper_move_down = false;
+		req.gripper_move_set = true;
+		
+		m_gripper_down = false;
+		m_take_ball = true;
+      
      } 
      else {		//no il gripper non è giu
       if(m_take_ball) {
@@ -128,8 +128,8 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
       }
     }
   }			//chiude il controllo su target_in_range
+  }
   return req;
-}
 }
 
 TakeTheBall::~TakeTheBall() {
