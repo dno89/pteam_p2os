@@ -68,7 +68,8 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	bool RANSACdetect(const pteam_p2os::Perception& in, Target* t);
 	
 	////debug
-#ifndef	NDEBUG
+#ifndef	NDEBUG	
+#warning @ TargetDetector DRAWING ENABLED
 	GnuplotHL m_gp;
 #endif
 	
