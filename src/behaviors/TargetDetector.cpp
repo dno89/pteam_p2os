@@ -243,7 +243,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		Point2d target = ReadProperty<Point2d>("TARGET_POSITION");
 		std::vector<std::pair<double, double>> tv;
 		tv.push_back(std::make_pair(-target.y, target.x));
-		m_gp1 << m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data', '-' with points linecolor rgb \"red\"\n";
+		m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data', '-' with points linecolor rgb \"red\"\n";
 		m_gp1.send(processed_points).send(tv);
 	} else {
 		m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";

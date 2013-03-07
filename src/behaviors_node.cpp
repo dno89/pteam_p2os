@@ -26,17 +26,6 @@
 
 CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behaviors_node.log")
 
-///TODO: definire il tipo per la richiesta al robot control server nel file srv/RobotControl.srv
-
-class DummyBehavior : public pteam::CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {
-public:
-    ~DummyBehavior() {};
-    double operator() ( const double& in, bool* subsume = 0 ) {
-		*subsume = true;
-		return std::pow(in, 3);
-	}
-};
-
 #ifdef	TURBO_MODE
 #warning ## TURBO MODE ENABLED ##
 #endif	//TURBO_MODE
@@ -59,10 +48,7 @@ private:
 	ros::ServiceClient m_rc_client;
 	
 	//behaviors manager
-	///TODO: tolgo il DummyMerger e ne definisco uno vero!!
 	pteam::BehaviorManager<pteam_p2os::Perception, pteam_p2os::RobotControlRequest, pteam::SimpleMerger> m_behaviors_manager;
-// 	pteam::BehaviorManager<double, double, pteam::SimpleMerger> m_behaviors_manager;
-	
 	
 	void newLaserScan(const pteam_p2os::Perception& pls_msg) {
 		m_perc_mutex.lock();
@@ -87,7 +73,6 @@ public:
 		ROS_INFO("Using service %s",robot_control_service.c_str()); 
 		m_rc_client = m_nh.serviceClient<pteam_p2os::RobotControl>(robot_control_service);
 		
-		///TODO: costruisco la catena dei behaviors!!!
 		m_behaviors_manager.AddBehaviorsLevel();
  		m_behaviors_manager.AddBehaviorsLevel();
 		
@@ -96,14 +81,15 @@ public:
 // 		ROS_INFO("CA_alpha read, %f", CA_alpha);
 		m_nh.param<double>("CA_threshold", CA_threshold, double(0.3));
 // 		ROS_INFO("CA_threshold read, %f", CA_threshold);
-		
 		DEBUG_T(CA_alpha,)
 		DEBUG_T(CA_threshold,)
-		
 		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
+		
+		
 		double TD_ball_radius;
 		m_nh.param<double>("TD_ball_radius", TD_ball_radius, double(0.1));
 		m_behaviors_manager.AddBehavior(0, new pteam::TargetDetector(0.2, 0.1, 0.3, 0.1));
+		
 		
 		double SITM_threshold, SITM_alpha, SITM_learning_rate;
 		int SITM_valley_threshold, SITM_nl_n;
@@ -116,10 +102,10 @@ public:
 		DEBUG_T(SITM_threshold,)
 		DEBUG_T(SITM_valley_threshold,)
 		DEBUG_T(SITM_nl_n,)
+		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
 		
-		///FIXME: reenable SITM
-// 		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
-// 		m_behaviors_manager.AddBehavior(1, new pteam::MoveThroughwardGoal(2.0));
+		
+		m_behaviors_manager.AddBehavior(1, new pteam::MoveThroughwardGoal(DEG_TO_RAD(5.0)));
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }
