@@ -173,6 +173,11 @@ std::ostream& operator<<(std::ostream& out, const Point2<T>& p) {
 typedef Point2<double> Point2d;
 typedef Point2<float> Point2f;
 
+template<typename T>
+double Lenght(const Point2<T>& p) {
+	return std::sqrt(p.x*p.x + p.y*p.y);
+}
+
 
 template<typename T>
 struct Point3 {

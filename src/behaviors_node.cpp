@@ -15,6 +15,7 @@
 #include <behaviors/StayInTheMiddle.h>
 #include <behaviors/TargetDetector.h>
 #include <behaviors/MoveThroughwardGoal.h>
+#include <behaviors/TakeTheBall.h>
 ////merger
 #include <merger/SimpleMerger.h>
 ////common
@@ -74,7 +75,10 @@ public:
 		m_rc_client = m_nh.serviceClient<pteam_p2os::RobotControl>(robot_control_service);
 		
 		m_behaviors_manager.AddBehaviorsLevel();
- 		m_behaviors_manager.AddBehaviorsLevel();
+		m_behaviors_manager.AddBehaviorsLevel();
+		m_behaviors_manager.AddBehaviorsLevel();
+		
+		m_behaviors_manager.AddBehavior(0, new pteam::TakeTheBall());
 		
 		double CA_alpha, CA_threshold;
 		m_nh.param<double>("CA_alpha", CA_alpha, double(0.01));
@@ -83,12 +87,12 @@ public:
 // 		ROS_INFO("CA_threshold read, %f", CA_threshold);
 		DEBUG_T(CA_alpha,)
 		DEBUG_T(CA_threshold,)
-		m_behaviors_manager.AddBehavior(0, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
+		m_behaviors_manager.AddBehavior(1, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
 		
 		
 		double TD_ball_radius;
 		m_nh.param<double>("TD_ball_radius", TD_ball_radius, double(0.1));
-		m_behaviors_manager.AddBehavior(0, new pteam::TargetDetector(0.2, 0.1, 0.3, 0.1));
+		m_behaviors_manager.AddBehavior(1, new pteam::TargetDetector(0.2, 0.1, 0.3, 0.1));
 		
 		
 		double SITM_threshold, SITM_alpha, SITM_learning_rate;
@@ -102,10 +106,10 @@ public:
 		DEBUG_T(SITM_threshold,)
 		DEBUG_T(SITM_valley_threshold,)
 		DEBUG_T(SITM_nl_n,)
-		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
+		m_behaviors_manager.AddBehavior(2, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
 		
 		
-		m_behaviors_manager.AddBehavior(1, new pteam::MoveThroughwardGoal(DEG_TO_RAD(5.0)));
+		m_behaviors_manager.AddBehavior(2, new pteam::MoveThroughwardGoal(DEG_TO_RAD(2.0)));
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }

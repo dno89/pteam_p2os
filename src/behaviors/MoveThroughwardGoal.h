@@ -21,7 +21,13 @@ class MoveThroughwardGoal : public CBehavior<pteam_p2os::Perception, pteam_p2os:
    
    ////magic numbers
    static double affinity() { return 2.0; }
-   static double max_speed() { return .2; }
+   static double max_speed() { 
+#ifdef	TURBO_MODE
+		return 1.0;
+#else
+	   return .4;
+#endif
+	}
    
    
 public:
