@@ -59,7 +59,7 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	
 	////magic numbers
 	static int min_age_to_ghost() { return 0; }
-	static int min_age_to_confirm() { return 10; }
+	static int min_age_to_confirm() { return 5; }
 	static int max_ghost_age() { return 10; }
 	
 	////detection

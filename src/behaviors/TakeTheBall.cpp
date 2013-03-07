@@ -157,12 +157,20 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 		auto t = high_resolution_clock::now();
 		high_resolution_clock::duration dt;
 		Point2d tp;
+		double theta;
 		
 		//state switch
 		switch(m_state) {
 			case eSFirstCall:
 				
 				DEBUG_P("First Call!",)
+				
+				//stop the robot
+				req.linear_speed = 0.0;
+				req.linear_speed_set = true;
+				req.angular_speed = 0.0;
+				req.angular_speed_set = true;
+				
 				
 				//lower the gripper
 				req.gripper_move_set = true;
@@ -185,13 +193,15 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				DEBUG_P("Move Forward",)
 				
 				tp = ReadProperty<Point2d>("TARGET_POSITION");
-// 				double theta = atan2(tp.y, tp.x);
+				theta = atan2(tp.y, tp.x);
 				
 				if(Lenght(tp) >= distance_ball()) {
 					//angular speed
-// 					req.angular_speed_set = true TODO: align the robot with the target
-					req.linear_speed = closing_speed();
+					req.linear_speed = closing_speed()*cos(theta);
 					req.linear_speed_set = true;
+					
+					req.angular_speed = sin(theta);
+					req.angular_speed_set = true;
 				} else {
 					//lift the gripper
 					req.gripper_move_set = true;
@@ -205,6 +215,12 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				break;
 			case eSWaitingUp:
 				DEBUG_P("Waiting Up!",)
+				
+				//stop the robot
+// 				req.linear_speed = 0.0;
+// 				req.linear_speed_set = true;
+				req.angular_speed = 0.0;
+				req.angular_speed_set = true;
 				
 				t = high_resolution_clock::now();
 				
