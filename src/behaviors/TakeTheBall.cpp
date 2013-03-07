@@ -197,7 +197,7 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				
 				if(Lenght(tp) >= distance_ball()) {
 					//angular speed
-					req.linear_speed = closing_speed()*cos(theta);
+					req.linear_speed = closing_speed()/**cos(theta)*/;
 					req.linear_speed_set = true;
 					
 					req.angular_speed = sin(theta);
