@@ -14,6 +14,7 @@
 #include <behaviors/CollisionAvoidance.h>
 #include <behaviors/StayInTheMiddle.h>
 #include <behaviors/TargetDetector.h>
+#include <behaviors/MoveThroughwardGoal.h>
 ////merger
 #include <merger/SimpleMerger.h>
 ////common
