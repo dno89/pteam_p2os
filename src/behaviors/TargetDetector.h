@@ -84,7 +84,7 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 #endif	//ON_SIMULATION
 	}
 	static double consensus_perc() { return 0.9; }
-	static double in_range_distance() { return 0.5; }
+	static double in_range_distance() { return 0.7; }
 public:
 	TargetDetector(double range_thr, double taget_radius, double target_radius_toll, double accpet_threshold);
 	virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );

@@ -37,7 +37,7 @@ class TakeTheBall : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotCo
   
 	////magic numbers
 	static double interval_gripper()	{ return 2.0 * 10e+6; }	//Restituisce il tempo impiegato dalla forca per abbassarsi/alzarsi
-	static double distance_ball()		{ return 0.15; }		//Restituisce la massima distanza dalla palla dopo la quale possiamo iniziare ad inforcarla
+	static double distance_ball()		{ return 0.25; }		//Restituisce la massima distanza dalla palla dopo la quale possiamo iniziare ad inforcarla
 	static double closing_speed()		{
 #ifdef	TURBO_MODE
 		return 0.2;

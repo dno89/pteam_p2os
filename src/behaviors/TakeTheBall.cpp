@@ -243,8 +243,14 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				DEBUG_P("FUCK YEAHHHHH!!!!! WINNING!!!",)
 				
 				///TODO
-				
+				/*
 				req.angular_speed = 1.0;
+				req.angular_speed_set = true;*/
+				
+				//stop the robot
+				req.linear_speed = 0.0;
+				req.linear_speed_set = true;
+				req.angular_speed = 0.0;
 				req.angular_speed_set = true;
 				break;
 		};
