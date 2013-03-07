@@ -102,16 +102,16 @@ public:
 // 		m_gp1 << "set yrange [" << perc_msg.laser.data.range_max << " : " << -perc_msg.laser.data.range_max << "]\n";
 // 		m_gp1 << "plot '-' with points linecolor rgb \"red\" title 'unfiltered data'\n";
 // 		m_gp1.send(points);
-		if(ReadProperty<bool>("TARGET_DETECTED")) {
-			Point2d target = ReadProperty<Point2d>("TARGET_POSITION");
-			std::vector<std::pair<double, double>> tv;
-			tv.push_back(make_pair(-target.y, target.x));
-			m_gp1 << m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data', '-' with points linecolor rgb \"red\"\n";
-			m_gp1.send(processed_points).send(tv);
-		} else {
+// 		if(ReadProperty<bool>("TARGET_DETECTED")) {
+// 			Point2d target = ReadProperty<Point2d>("TARGET_POSITION");
+// 			std::vector<std::pair<double, double>> tv;
+// 			tv.push_back(make_pair(-target.y, target.x));
+// 			m_gp1 << m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data', '-' with points linecolor rgb \"red\"\n";
+// 			m_gp1.send(processed_points).send(tv);
+// 		} else {
 			m_gp1 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
 			m_gp1.send(processed_points);
-		}
+// 		}
 		m_gp1.flush();
 		
 // 		m_gp2 << "plot '-' with points linecolor rgb \"green\" title 'filtered data'\n";
