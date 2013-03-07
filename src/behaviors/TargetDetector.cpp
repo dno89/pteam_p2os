@@ -337,6 +337,8 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 	for(int ii = 0; ii < intervals.size(); ++ii) {
 		std::vector<Point2d> points;
 		
+		DEBUG_P("Processing interval from " << intervals[ii].first << " to " << intervals[ii].second,)
+		
 		for(int jj = intervals[ii].first; jj <= intervals[ii].second; ++jj) {
 			if(isnan(in.laser.data.ranges[jj])) {
 				continue;
@@ -350,6 +352,7 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 		
 		if(total_points < min_consensus()) {
 			//the interval doesn't contain enough points
+			DEBUG_P("Not enough point in this interval! number of points: " << total_points,)
 			continue;
 		}
 		
@@ -360,7 +363,8 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 		Circle ransac_model;
 		try {
 			ransac_model = m_RANSAC.Run(&points);
-		} catch(...) {
+		} catch(std::runtime_error& e) {
+			DEBUG_T(e.what(),)
 			continue;
 		}
 		//now points contain only the consensus points

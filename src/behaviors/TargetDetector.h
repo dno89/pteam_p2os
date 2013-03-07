@@ -75,7 +75,7 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	
 	////magic numbers
 	static int min_consensus() { return 10; }
-	static int max_RANSAC_iteration() { return 50; }
+	static int max_RANSAC_iteration() { return 100; }
 	static int RANSAC_distance_threshold() { return 0.02; }
 	static double consensus_perc() { return 0.9; }
 public:
