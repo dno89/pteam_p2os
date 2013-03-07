@@ -11,10 +11,10 @@
 #include <base/CBehavior.h>
 #include <base/Common.h>
 #include "Circle.h"
-#include <base/RANSAC.h>
 #include <pteam_p2os/Perception.h>
 #include <pteam_p2os/RobotControl.h>
 #include <geometry_msgs/Pose.h>
+#include <base/RANSAC.h>
 
 #ifndef NDEBUG
 #include <base/gnuplot_i.hpp>
@@ -76,7 +76,7 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	////magic numbers
 	static int min_consensus() { return 10; }
 	static int max_RANSAC_iteration() { return 100; }
-	static int RANSAC_distance_threshold() { return 0.02; }
+	static double RANSAC_distance_threshold() { return 0.02; }
 	static double consensus_perc() { return 0.9; }
 public:
 	TargetDetector(double range_thr, double taget_radius, double target_radius_toll, double accpet_threshold);

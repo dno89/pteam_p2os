@@ -18,6 +18,10 @@
 #include <set>
 #include <strstream>
 
+///FIXME
+// #include <base/DMDebug.h>
+// 
+// CREATE_DEBUG_LOG("/tmp/pteam-behaviors-target_detector_ransac.log",2)
 
 /**
  * @class CModelT interface to implement for the ModelT type in RANSAC
@@ -104,6 +108,8 @@ void RANSAC<PointT, ModelT>::LoadPoints ( IteratorT first, IteratorT last ) {
 	
 	//copy the new points
 	std::copy(first, last, std::back_inserter(m_points));
+	
+// 	DEBUG_T_(m_points.size(), RANSAC, 2)
 }
 
 template<typename PointT, typename ModelT>
@@ -117,6 +123,11 @@ ModelT RANSAC<PointT, ModelT>::Run ( std::vector< PointT >* out_elements ) {
 	const unsigned int realMAX_ITERATION = ReadProperty<unsigned int>("REAL_MAX_ITERATION");
 	const unsigned int MIN_CONSENSUS = ReadProperty<unsigned int>("MIN_CONSENSUS");
 	const double THRESHOLD = ReadProperty<double>("DISTANCE_THRESHOLD");
+	
+// 	DEBUG_T_(MAX_ITERATION, RANSAC, 2)
+// 	DEBUG_T_(realMAX_ITERATION, RANSAC, 2)
+// 	DEBUG_T_(MIN_CONSENSUS, RANSAC, 2)
+// 	DEBUG_T_(THRESHOLD, RANSAC, 2)
 	
 	//best model param
 	unsigned int bestConsensus = 0;
@@ -144,9 +155,14 @@ ModelT RANSAC<PointT, ModelT>::Run ( std::vector< PointT >* out_elements ) {
 		//construct the model
 		ModelT model(seed_points);
 		
+// 		DEBUG_T_(model, RANSAC, 2)
+		
 		//count the number of consensus
 		unsigned int consensus = 0;
 		for(unsigned int ii = 0; ii < m_points.size(); ++ii) {
+// 			DEBUG_T_(m_points[ii],RANSAC, 2)
+// 			DEBUG_T_(model(m_points[ii]),RANSAC, 2)
+			
 			if(model(m_points[ii]) < THRESHOLD) {
 				//the point is within the model
 				++consensus;
