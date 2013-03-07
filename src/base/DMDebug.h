@@ -34,6 +34,9 @@
 #define CREATE_PRIVATE_DEBUG_LOG(FNAME)\
 static std::ofstream dm_log(FNAME, std::ios_base::trunc);
 
+#define CREATE_DEBUG_LOG(FNAME, TOKEN)\
+static std::ofstream dm_log##TOKEN(FNAME, std::ios_base::trunc);
+
 #define CREATE_GLOBAL_DEBUG_LOG(FNAME)\
 std::ofstream dm_log(FNAME, std::ios_base::trunc);
 
@@ -52,6 +55,13 @@ dm_log << #CONTEXT" -->\t" <<\
 X << std::endl;
 
 /**
+ * \brief Print a message to a custom stream
+ */
+#define DEBUG_P_(X, CONTEXT, TOKEN)\
+dm_log##TOKEN << #CONTEXT" -->\t" <<\
+X << std::endl;
+
+/**
  * \brief Print a message with no context
  */
 #define DEBUG_PNC(X)\
@@ -63,6 +73,13 @@ X << std::endl;
  */
 #define DEBUG_T(X, CONTEXT)\
 dm_log << #CONTEXT" -->\t" <<\
+#X << " = " << (X) << std::endl;
+
+/**
+ * \brief trace a value to a custom stream
+ */
+#define DEBUG_T_(X, CONTEXT, TOKEN)\
+dm_log##TOKEN << #CONTEXT" -->\t" <<\
 #X << " = " << (X) << std::endl;
 
 /**
@@ -112,6 +129,8 @@ dm_log << #CONTEXT" -->\t" <<\
 #define DEBUG_PNC(X)
 #define DEBUG_TCAT(X, CONTEXT)
 #define DEBUG_TPRESERVE(X, CONTEXT) X;
+#define DEBUG_T_(X, CONTEXT, TOKEN)
+#define DEBUG_P_(X, CONTEXT, TOKEN)
 #endif  //NDEBUG
 
 #endif	//_DMDEBUG_H

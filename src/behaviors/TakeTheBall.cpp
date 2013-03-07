@@ -55,10 +55,10 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
       //la forca è abbassata
 	
       distance = sqrt(pow(ball_coord.x, 2) + pow(ball_coord.y, 2));
-	
       DEBUG_P("GRIPPER DOWN")
       
       if(distance < 0.2) {
+      if(distance < distance_ball()) {
 	//la palla è sufficientemente vicina: la inforco e inizio ad alzare la forca sempre andando avanti:
 	DEBUG_P("GRIPPER START TAKE THE BALL AND MOVE UP")
 	
@@ -80,8 +80,8 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
 	DEBUG_P("GRIPPER IS MOVING UP WITH THE BALL")
 	
 	interval = current_time - m_start_time;
-	if(interval.count() > (4.5*10e-6)) {
-	  //il gripper si è abbassato:
+	if(interval.count() > (interval_gripper())) {
+	  //il gripper si è alzato, quindi ci fermiamo:
 	  req.linear_speed = 0.0;
 	  req.linear_speed_set = true;
 	  
@@ -95,11 +95,11 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator() ( const pteam_p2os::Perc
 	if(m_command_requested) {
 	  //ho gia dato il comando: contollo se la forca ha finito di scendere
 	  DEBUG_P("GRIPPER IS MOVING DOWN")
-	  
+	  //ho gia dato il comando: controllo se la forca ha finito di scendere
 	  current_time = high_resolution_clock::now();
 	
 	  interval = current_time - m_start_time;
-	  if(interval.count() > (4.5*10e-6)) {
+	  if(interval.count() > (interval_gripper())) {
 	    //il gripper si è abbassato:
 	    DEBUG_P("GRIPPER DOWN")
 	    

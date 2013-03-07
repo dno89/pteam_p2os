@@ -14,6 +14,7 @@
 #include <behaviors/CollisionAvoidance.h>
 #include <behaviors/StayInTheMiddle.h>
 #include <behaviors/TargetDetector.h>
+#include <behaviors/MoveThroughwardGoal.h>
 ////merger
 #include <merger/SimpleMerger.h>
 ////common
@@ -116,7 +117,7 @@ public:
 		DEBUG_T(SITM_nl_n,)
 		
 		///FIXME: reenable SITM
-		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
+// 		m_behaviors_manager.AddBehavior(1, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
 		m_behaviors_manager.AddBehavior(1, new pteam::MoveThroughwardGoal(2.0));
 	}
 	

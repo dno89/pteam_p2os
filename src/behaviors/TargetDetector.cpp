@@ -18,6 +18,12 @@ TargetDetector::TargetDetector ( double range_thr, double target_radius, double 
 	base_type::AddProperty("TARGET_DETECTED", bool(false));
 	base_type::AddProperty("TARGET_POSITION", Point2d());
 	base_type::AddProperty("TARGET_IN_RANGE", bool(false));
+	
+#ifndef NDEBUG
+	m_gp.set_style("points");
+	m_gp.set_xrange(-6, 6);
+	m_gp.set_yrange(0, 6);
+#endif
 }
 
 
@@ -28,12 +34,25 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 // 	DEBUG_T(sp.x,)
 // 	DEBUG_T(sp.y,)
 // 	DEBUG_T(RAD_TO_DEG(sp.theta),);
+#ifndef NDEBUG
+	m_gp.reset_plot();
+#endif
 
 	///TODO: localize and track here!!
 	Target t;
 	SimplePose cur_pose = OdomToSimplePose(in.odometry.pose.pose);
-	if(detectCircle(in, &t)) {
+// 	if(detectCircle(in, &t)) {
+	if(RANSACdetect(in, &t)) {
 		DEBUG_P("Circle detected!", ####)
+		
+#ifndef NDEBUG
+		{
+			std::vector<double> x, y;
+			x.push_back(-t.y);
+			y.push_back(t.x);
+			m_gp.plot_xy(x, y, "detected circle");
+		}
+#endif
 		
 		//a circle detected
 		if(m_have_hypothesis) {
@@ -153,6 +172,16 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 		
 		//publish the pose
 		SetProperty("TARGET_POSITION", Point2d(pos));
+		
+#ifndef NDEBUG
+		{
+			std::vector<double> x, y;
+			
+			x.push_back(-pos.y);
+			y.push_back(pos.x);
+			m_gp.plot_xy(x, y, "current hypothesis");
+		}
+#endif
 		
 	} else {
 		//clear the flag
@@ -288,17 +317,27 @@ void TargetDetector::extractCircle2(const pteam_p2os::Perception& in, const inte
 	//    std::cout << "center " << center.x << "," << center.y << std::endl;
 }
 
+////support function
+//function to sort model with relative consensus perc
+bool cmp(const std::pair<Circle, double>& t1, const std::pair<Circle, double>& t2) {
+	return (t1.second > t2.second);
+}
+
 bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  {
 	interval_vector intervals;
 	//split scan into intervals
 	splitScan(intervals, in);
 	
 	DEBUG_T(intervals.size(),)
-	Circle best_model;
+	
+// 	Circle best_model;
+	std::vector<std::pair<Circle, double>> models;
 	
 	//for each scan interval
 	for(int ii = 0; ii < intervals.size(); ++ii) {
 		std::vector<Point2d> points;
+		
+		DEBUG_P("Processing interval from " << intervals[ii].first << " to " << intervals[ii].second,)
 		
 		for(int jj = intervals[ii].first; jj <= intervals[ii].second; ++jj) {
 			if(isnan(in.laser.data.ranges[jj])) {
@@ -313,6 +352,7 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 		
 		if(total_points < min_consensus()) {
 			//the interval doesn't contain enough points
+			DEBUG_P("Not enough point in this interval! number of points: " << total_points,)
 			continue;
 		}
 		
@@ -320,13 +360,49 @@ bool TargetDetector::RANSACdetect(const pteam_p2os::Perception& in, Target* t)  
 		m_RANSAC.LoadPoints(points.begin(), points.end());
 		
 		points.clear();
-		Circle ransac_model = m_RANSAC.Run(&points);
+		Circle ransac_model;
+		try {
+			ransac_model = m_RANSAC.Run(&points);
+		} catch(std::runtime_error& e) {
+			DEBUG_T(e.what(),)
+			continue;
+		}
 		//now points contain only the consensus points
 		
+		DEBUG_T(ransac_model,)
+		
 		//validity check
-		if(ransac_model.GetRadius() != -1 && points.size() >= consensus_perc()*total_points && ransac_model.GetCenter().x >= 0.0) {
+		if(	ransac_model.GetRadius() != -1 &&
+			points.size() >= consensus_perc()*total_points &&
+			ransac_model.GetCenter().x >= 0.0 &&
+			std::abs(ransac_model.GetRadius()-m_target_radius) < m_target_radius_tolerance * m_target_radius ) {
+			
 			//this is a valid model
-			///TODO: faccio il confronto sul raggio e prendo quello che più si avvicina al raggio vero
+			models.push_back(std::make_pair(ransac_model, points.size()/double(total_points)));
 		}
+	}
+	
+	if(models.size()) {
+		//models contain the candidate models
+		DEBUG_P("The found models are: ",)
+		for(auto it = models.begin(); it != models.end(); ++it) {
+			DEBUG_T(it->first,)
+		}
+		DEBUG_P("",)
+		
+		std::sort(models.begin(), models.end(), cmp);
+		
+		DEBUG_T(models.front().first, )
+		
+		t->radius = models.front().first.GetRadius();
+		t->x = models.front().first.GetCenter().x;
+		t->y = models.front().first.GetCenter().y;
+		
+		return true;
+		
+	} else {
+		
+		return false;
+		
 	}
 }
