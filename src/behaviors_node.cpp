@@ -110,7 +110,7 @@ public:
 		m_behaviors_manager.AddBehavior(2, new pteam::StayInTheMiddle(SITM_threshold, SITM_valley_threshold, SITM_alpha, SITM_nl_n, true, SITM_learning_rate));
 		
 		
-		m_behaviors_manager.AddBehavior(2, new pteam::MoveThroughwardGoal(DEG_TO_RAD(30.0)));
+		m_behaviors_manager.AddBehavior(2, new pteam::MoveThroughwardGoal(DEG_TO_RAD(2.0)));
 	}
 	
 	~BehaviorsNode() { /* do nothing*/ }

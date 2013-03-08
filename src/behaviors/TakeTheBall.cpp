@@ -174,7 +174,10 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				tp = ReadProperty<Point2d>("TARGET_POSITION");
 				theta = atan2(tp.y, tp.x);
 				
+				DEBUG_T(theta, )
+				
 				if(std::abs(theta) > angular_threshold()) {
+					DEBUG_P("Aligning the robot...", )
 					//align the robot
 					req.angular_speed = sin(theta);
 					req.angular_speed_set = true;
@@ -235,14 +238,14 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				req.angular_speed = 0.0;
 				req.angular_speed_set = true;
 				
-				t = high_resolution_clock::now();
+// 				t = high_resolution_clock::now();
 				
 				dt = t - m_start_time;
 				
 				if(dt.count() <= interval_gripper()) {
 					//still waiting
 					//TODO: move a little forwad??
-					req.linear_speed = closing_speed();
+					req.linear_speed = 0.0/*closing_speed()*/;
 					req.linear_speed_set = true;
 				} else {
 					req.linear_speed = 0.0;
@@ -274,6 +277,14 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 	}
 	
 	req.behavior_name = "TakeTheBall";
+	
+	DEBUG_T(req.angular_speed,)
+	DEBUG_T(bool(req.angular_speed_set), )
+	DEBUG_T(req.linear_speed,)
+	DEBUG_T(bool(req.linear_speed_set), )
+	DEBUG_T(bool(req.gripper_move_down), )
+	DEBUG_T(bool(req.gripper_move_set), )
+	DEBUG_T(req.behavior_name, )
 	
 	return req;
 }

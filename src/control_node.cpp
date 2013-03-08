@@ -45,14 +45,14 @@ private:
 		///TODO: handle the response here
 		///TODO: se si accede a qualche dato sicuramente serve anche un bel mutex
 		
-		DEBUG_P("handleRequest called",)
+		DEBUG_P("handleRequest called",****)
 		DEBUG_T(req.angular_speed,)
 		DEBUG_T(bool(req.angular_speed_set), )
 		DEBUG_T(req.linear_speed,)
 		DEBUG_T(bool(req.linear_speed_set), )
-		DEBUG_T(req.behavior_name, )
 		DEBUG_T(bool(req.gripper_move_down), )
 		DEBUG_T(bool(req.gripper_move_set), )
+		DEBUG_T(req.behavior_name, )
 		
 		m_lr_mutex.lock();
 			m_last_request = req;
@@ -138,7 +138,6 @@ public:
 			}
 			
 			//gripper
-			///TODO: aggiungo i comandi del gripper
 			if(m_last_request.gripper_move_set) {
 				gripper_driver::Messaggio gripper_srv;
 				
