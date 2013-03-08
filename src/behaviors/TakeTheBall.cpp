@@ -143,6 +143,7 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 	
 	pteam_p2os::RobotControlRequest req;
 	rstRobotControlRequest(&req);
+	req.affinity = 1.0;
 	
 	if(tir) {
 		
@@ -271,20 +272,20 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				break;
 		};
 		
+		req.behavior_name = "TakeTheBall";
+		
+		DEBUG_T(req.angular_speed,)
+		DEBUG_T(bool(req.angular_speed_set), )
+		DEBUG_T(req.linear_speed,)
+		DEBUG_T(bool(req.linear_speed_set), )
+		DEBUG_T(bool(req.gripper_move_down), )
+		DEBUG_T(bool(req.gripper_move_set), )
+		DEBUG_T(req.behavior_name, )
+		
 	} else {
 		//no target in range
 		*subsume = false;
 	}
-	
-	req.behavior_name = "TakeTheBall";
-	
-	DEBUG_T(req.angular_speed,)
-	DEBUG_T(bool(req.angular_speed_set), )
-	DEBUG_T(req.linear_speed,)
-	DEBUG_T(bool(req.linear_speed_set), )
-	DEBUG_T(bool(req.gripper_move_down), )
-	DEBUG_T(bool(req.gripper_move_set), )
-	DEBUG_T(req.behavior_name, )
 	
 	return req;
 }
