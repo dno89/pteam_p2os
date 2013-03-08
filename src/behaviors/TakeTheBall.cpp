@@ -16,7 +16,7 @@ CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-taketheball.log");
 using namespace pteam;
 
 
-TakeTheBall::TakeTheBall() : m_state(eSFirstCall) {
+TakeTheBall::TakeTheBall() : m_state(eSFirstCall) , m_enabled(false) {
 	// 	m_command_requested = false;
 	// 	m_gripper_down = false;
 	// 	m_take_ball = false;
@@ -145,7 +145,9 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 	rstRobotControlRequest(&req);
 	req.affinity = 1.0;
 	
-	if(tir) {
+	if(tir || m_enabled) {
+		
+		m_enabled = true;
 		
 		DEBUG_P("Target in range",)
 		

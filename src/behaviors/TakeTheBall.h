@@ -35,6 +35,7 @@ class TakeTheBall : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotCo
 	
 	high_resolution_clock::time_point m_start_time;	//istante iniziale del transitorio della forca
 	eState m_state;
+	bool m_enabled;
   
 	////magic numbers
 	static double interval_gripper()	{ return 2.0 * 1e+6; }	//Restituisce il tempo impiegato dalla forca per abbassarsi/alzarsi
