@@ -7,6 +7,10 @@
 
 #include "MoveThroughwardGoal.h"
 #include "base/Common.h"
+#include "base/DMDebug.h"
+
+CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-movetowardgoal.log");
+
 
 using namespace pteam;
 
@@ -36,12 +40,16 @@ pteam_p2os::RobotControlRequest MoveThroughwardGoal::operator() ( const pteam_p2
   }
   
   if(target_detected) {
+    DEBUG_P("TARGET DETECTED")
+    
     ball_coord = ReadProperty<Point2d>("TARGET_POSITION");
     ball_angle = RAD_TO_DEG(atan2(ball_coord.y, ball_coord.x));
     req.affinity = affinity();
     //controllo la posizione della palla
     if((ball_angle > m_threshold_angle) && (ball_angle < -m_threshold_angle)) {
       //la palla non è davanti a me
+      DEBUG_P("BALL IS NOT IN FRONT OF ME")
+      
       req.linear_speed = 0.0;
       req.linear_speed_set = true;
     }
