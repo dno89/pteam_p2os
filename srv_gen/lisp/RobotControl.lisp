@@ -41,7 +41,12 @@
     :reader gripper_move_set
     :initarg :gripper_move_set
     :type cl:boolean
-    :initform cl:nil))
+    :initform cl:nil)
+   (behavior_name
+    :reader behavior_name
+    :initarg :behavior_name
+    :type cl:string
+    :initform ""))
 )
 
 (cl:defclass RobotControl-request (<RobotControl-request>)
@@ -86,6 +91,11 @@
 (cl:defmethod gripper_move_set-val ((m <RobotControl-request>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader pteam_p2os-srv:gripper_move_set-val is deprecated.  Use pteam_p2os-srv:gripper_move_set instead.")
   (gripper_move_set m))
+
+(cl:ensure-generic-function 'behavior_name-val :lambda-list '(m))
+(cl:defmethod behavior_name-val ((m <RobotControl-request>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader pteam_p2os-srv:behavior_name-val is deprecated.  Use pteam_p2os-srv:behavior_name instead.")
+  (behavior_name m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <RobotControl-request>) ostream)
   "Serializes a message object of type '<RobotControl-request>"
   (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'affinity))))
@@ -107,6 +117,12 @@
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'linear_speed_set) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'gripper_move_down) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'gripper_move_set) 1 0)) ostream)
+  (cl:let ((__ros_str_len (cl:length (cl:slot-value msg 'behavior_name))))
+    (cl:write-byte (cl:ldb (cl:byte 8 0) __ros_str_len) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 8) __ros_str_len) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 16) __ros_str_len) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 24) __ros_str_len) ostream))
+  (cl:map cl:nil #'(cl:lambda (c) (cl:write-byte (cl:char-code c) ostream)) (cl:slot-value msg 'behavior_name))
 )
 (cl:defmethod roslisp-msg-protocol:deserialize ((msg <RobotControl-request>) istream)
   "Deserializes a message object of type '<RobotControl-request>"
@@ -132,6 +148,14 @@
     (cl:setf (cl:slot-value msg 'linear_speed_set) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'gripper_move_down) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'gripper_move_set) (cl:not (cl:zerop (cl:read-byte istream))))
+    (cl:let ((__ros_str_len 0))
+      (cl:setf (cl:ldb (cl:byte 8 0) __ros_str_len) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 8) __ros_str_len) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 16) __ros_str_len) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 24) __ros_str_len) (cl:read-byte istream))
+      (cl:setf (cl:slot-value msg 'behavior_name) (cl:make-string __ros_str_len))
+      (cl:dotimes (__ros_str_idx __ros_str_len msg)
+        (cl:setf (cl:char (cl:slot-value msg 'behavior_name) __ros_str_idx) (cl:code-char (cl:read-byte istream)))))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<RobotControl-request>)))
@@ -142,16 +166,16 @@
   "pteam_p2os/RobotControlRequest")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<RobotControl-request>)))
   "Returns md5sum for a message object of type '<RobotControl-request>"
-  "3185975de18d77413b7496e7a5c4694a")
+  "9c51bfb4ee117f894f2c7dfa4bb16bb8")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'RobotControl-request)))
   "Returns md5sum for a message object of type 'RobotControl-request"
-  "3185975de18d77413b7496e7a5c4694a")
+  "9c51bfb4ee117f894f2c7dfa4bb16bb8")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<RobotControl-request>)))
   "Returns full string definition for message of type '<RobotControl-request>"
-  (cl:format cl:nil "float32 affinity~%float32 angular_speed~%bool angular_speed_set~%float32 linear_speed~%bool linear_speed_set~%bool gripper_move_down~%bool gripper_move_set~%~%~%"))
+  (cl:format cl:nil "float32 affinity~%float32 angular_speed~%bool angular_speed_set~%float32 linear_speed~%bool linear_speed_set~%bool gripper_move_down~%bool gripper_move_set~%string behavior_name~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'RobotControl-request)))
   "Returns full string definition for message of type 'RobotControl-request"
-  (cl:format cl:nil "float32 affinity~%float32 angular_speed~%bool angular_speed_set~%float32 linear_speed~%bool linear_speed_set~%bool gripper_move_down~%bool gripper_move_set~%~%~%"))
+  (cl:format cl:nil "float32 affinity~%float32 angular_speed~%bool angular_speed_set~%float32 linear_speed~%bool linear_speed_set~%bool gripper_move_down~%bool gripper_move_set~%string behavior_name~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <RobotControl-request>))
   (cl:+ 0
      4
@@ -161,6 +185,7 @@
      1
      1
      1
+     4 (cl:length (cl:slot-value msg 'behavior_name))
 ))
 (cl:defmethod roslisp-msg-protocol:ros-message-to-list ((msg <RobotControl-request>))
   "Converts a ROS message object to a list"
@@ -172,6 +197,7 @@
     (cl:cons ':linear_speed_set (linear_speed_set msg))
     (cl:cons ':gripper_move_down (gripper_move_down msg))
     (cl:cons ':gripper_move_set (gripper_move_set msg))
+    (cl:cons ':behavior_name (behavior_name msg))
 ))
 ;//! \htmlinclude RobotControl-response.msg.html
 
@@ -201,10 +227,10 @@
   "pteam_p2os/RobotControlResponse")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<RobotControl-response>)))
   "Returns md5sum for a message object of type '<RobotControl-response>"
-  "3185975de18d77413b7496e7a5c4694a")
+  "9c51bfb4ee117f894f2c7dfa4bb16bb8")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'RobotControl-response)))
   "Returns md5sum for a message object of type 'RobotControl-response"
-  "3185975de18d77413b7496e7a5c4694a")
+  "9c51bfb4ee117f894f2c7dfa4bb16bb8")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<RobotControl-response>)))
   "Returns full string definition for message of type '<RobotControl-response>"
   (cl:format cl:nil "~%~%~%"))

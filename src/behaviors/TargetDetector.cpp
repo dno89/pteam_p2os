@@ -259,6 +259,7 @@ pteam_p2os::RobotControlRequest TargetDetector::operator() ( const pteam_p2os::P
 	pteam_p2os::RobotControlRequest req;
 	rstRobotControlRequest(&req);
 	//alway return an empty request
+	req.behavior_name = "TargetDetector";
 	return req;
 }
 

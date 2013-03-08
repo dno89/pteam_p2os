@@ -93,6 +93,7 @@ void rstRobotControlRequest<pteam_p2os::RobotControlRequest> (pteam_p2os::RobotC
 	r->linear_speed_set = false;
 	r->linear_speed = 0.0;
 	r->gripper_move_set = false;
+	r->behavior_name = "No behavior";
 }
 
 

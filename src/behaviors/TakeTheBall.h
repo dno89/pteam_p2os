@@ -11,6 +11,7 @@
 #include <base/CBehavior.h>
 #include <pteam_p2os/Perception.h>
 #include <pteam_p2os/RobotControl.h>
+#include <base/Common.h>
 
 #include <chrono>
 

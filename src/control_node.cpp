@@ -47,7 +47,10 @@ private:
 		
 		DEBUG_P("handleRequest called",)
 		DEBUG_T(req.angular_speed,)
+		DEBUG_T(req.angular_speed_set, )
 		DEBUG_T(req.linear_speed,)
+		DEBUG_T(req.linear_speed_set, )
+		DEBUG_T(req.behavior_name, )
 		
 		m_lr_mutex.lock();
 			m_last_request = req;
@@ -98,6 +101,7 @@ public:
 		m_last_request.angular_speed = 0.0f;
 		m_last_request.gripper_move_set = true;
 		m_last_request.gripper_move_down = false;
+		m_last_request.behavior_name = "No behavior_name";
 	}
 	
 	~ControlNode() { /* do nothing*/ }
@@ -116,14 +120,18 @@ public:
 		m_lr_mutex.unlock();
 		
 		if(new_flag) {
+			//DEBUG_T(m_last_request.behavior_name, )
+		  
 			//update the applied commands
 			//angular speed
 			if(m_last_request.angular_speed_set) {
+				//DEBUG_T(m_last_request.angular_speed, )
 				m_controls.angular_speed = m_last_request.angular_speed;
 			}
 			
 			//linear speed
 			if(m_last_request.linear_speed_set) {
+				//DEBUG_T(m_last_request.angular_speed, )
 				m_controls.linear_speed = m_last_request.linear_speed;
 			}
 			
@@ -134,9 +142,11 @@ public:
 				
 				if(m_last_request.gripper_move_down) {
 					//move down
+					DEBUG_P("GRIPPER DOWN REQUEST", )
 					gripper_srv.request.cmd = (int)eGCABBASSA;
 				} else {
 					//move up
+					DEBUG_P("GRIPPER UP REQUEST", )
 					gripper_srv.request.cmd = (int)eGCALZA;
 				}
 				
@@ -151,9 +161,10 @@ public:
 		control_input.angular.x = control_input.angular.y = 0.0;
 		control_input.angular.z = m_controls.angular_speed;
 		
-		control_input.linear.x = m_controls.linear_speed;
-		control_input.linear.y = control_input.linear.z = 0.0;
-		
+ 		control_input.linear.x = m_controls.linear_speed;
+ 		control_input.linear.y = control_input.linear.z = 0.0;
+	
+
 		m_rc_publisher.publish(control_input);
 	}
 	

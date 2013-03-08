@@ -273,6 +273,8 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 		*subsume = false;
 	}
 	
+	req.behavior_name = "TakeTheBall";
+	
 	return req;
 }
 

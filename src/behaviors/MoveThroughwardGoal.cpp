@@ -10,10 +10,11 @@
 #include "base/Common.h"
 #include "base/DMDebug.h"
 
-CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-movetowardgoal.log");
+//CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-movetowardgoal.log");
 
-=======
 #include <base/DMDebug.h>
+
+#include <string>
 
 CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-move_toward_goal.log")
 
@@ -43,25 +44,25 @@ pteam_p2os::RobotControlRequest MoveThroughwardGoal::operator() ( const pteam_p2
   }
   
   if(target_detected) {
-    DEBUG_P("TARGET DETECTED")
+    //DEBUG_P("TARGET DETECTED")
     
-	Point2d ball_coord;
+    Point2d ball_coord;
 
     ball_coord = ReadProperty<Point2d>("TARGET_POSITION");
 	
-	DEBUG_T(ball_coord,)
+    DEBUG_T(ball_coord,)
 	
-	double ball_angle;		//angolo di orientazione della palla
+    double ball_angle;		//angolo di orientazione della palla
     ball_angle = atan2(ball_coord.y, ball_coord.x);
 	
-	DEBUG_T(ball_angle,)
+    DEBUG_T(ball_angle,)
 	
     req.affinity = affinity();
 	
     //controllo la posizione della palla
     if(std::abs(ball_angle) > m_threshold_angle/*(ball_angle > m_threshold_angle) && (ball_angle < -m_threshold_angle)*/) {
       //la palla non è davanti a me
-      DEBUG_P("BALL IS NOT IN FRONT OF ME")
+      //DEBUG_P("BALL IS NOT IN FRONT OF ME")
       
       req.linear_speed = 0.0;
     } else {
@@ -74,6 +75,8 @@ pteam_p2os::RobotControlRequest MoveThroughwardGoal::operator() ( const pteam_p2
     req.angular_speed = sin(ball_angle);
     req.angular_speed_set = true;
   }
+  
+  req.behavior_name = "MoveThroughwardGoal";
   
   return req;
   

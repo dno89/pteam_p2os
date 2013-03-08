@@ -5,4 +5,5 @@ float32 linear_speed
 bool linear_speed_set
 bool gripper_move_down
 bool gripper_move_set
+string behavior_name
 ---

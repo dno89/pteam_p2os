@@ -7,6 +7,7 @@
 ////standard lib
 #include <cstdlib>
 #include <cmath>
+#include <string>
 ////pteam lib
 #include "StayInTheMiddle.h"
 #include "base/Common.h"
@@ -226,6 +227,8 @@ pteam_p2os::RobotControlRequest StayInTheMiddle::operator() ( const pteam_p2os::
 	DEBUG_T(req.angular_speed,)
 	DEBUG_P("",)
 
+	req.behavior_name = std::string("StayInTheMiddle");
+	
 	return req;
 }
 

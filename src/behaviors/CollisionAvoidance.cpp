@@ -11,6 +11,7 @@
 #include <pteam_p2os/RobotControl.h>
 #include <cmath>
 #include <limits>
+#include <string>
 
 CREATE_PRIVATE_DEBUG_LOG("/tmp/pteam-behavior-collision_avoidance.log")
 
@@ -71,6 +72,9 @@ pteam_p2os::RobotControlRequest CollisionAvoidance::operator() ( const pteam_p2o
 	}
 	
 	*subsume = false;
+	req.behavior_name = "CollisionAvoidance";
+	
+	DEBUG_T(req.behavior_name, )
 	return req;
 }
 

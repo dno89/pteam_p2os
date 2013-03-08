@@ -13,4 +13,6 @@
           GRIPPER_MOVE_DOWN
           GRIPPER_MOVE_SET-VAL
           GRIPPER_MOVE_SET
+          BEHAVIOR_NAME-VAL
+          BEHAVIOR_NAME
 ))
