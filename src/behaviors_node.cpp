@@ -80,6 +80,10 @@ public:
 		
 		m_behaviors_manager.AddBehavior(0, new pteam::TakeTheBall());
 		
+		double TD_ball_radius;
+		m_nh.param<double>("TD_ball_radius", TD_ball_radius, double(0.1));
+		m_behaviors_manager.AddBehavior(0, new pteam::TargetDetector(0.2, 0.1, 0.3, 0.1));
+		
 		double CA_alpha, CA_threshold;
 		m_nh.param<double>("CA_alpha", CA_alpha, double(0.01));
 // 		ROS_INFO("CA_alpha read, %f", CA_alpha);
@@ -90,9 +94,6 @@ public:
 		m_behaviors_manager.AddBehavior(1, new pteam::CollisionAvoidance(CA_alpha, CA_threshold));
 		
 		
-		double TD_ball_radius;
-		m_nh.param<double>("TD_ball_radius", TD_ball_radius, double(0.1));
-		m_behaviors_manager.AddBehavior(1, new pteam::TargetDetector(0.2, 0.1, 0.3, 0.1));
 		
 		
 		double SITM_threshold, SITM_alpha, SITM_learning_rate;
