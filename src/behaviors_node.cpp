@@ -51,6 +51,8 @@ private:
 	//behaviors manager
 	pteam::BehaviorManager<pteam_p2os::Perception, pteam_p2os::RobotControlRequest, pteam::SimpleMerger> m_behaviors_manager;
 	
+	bool m_first_time;
+	
 	void newLaserScan(const pteam_p2os::Perception& pls_msg) {
 		m_perc_mutex.lock();
 			m_perc_msg = pls_msg;
@@ -59,7 +61,7 @@ private:
 	}
 	
 public:
-	BehaviorsNode(): m_nh("behaviors_node"), m_new_flag(false) {
+	BehaviorsNode(): m_nh("behaviors_node"), m_new_flag(false), m_first_time(true) {
 		std::string processed_ls_topic;
 		std::string robot_control_service;
 		
@@ -127,10 +129,19 @@ public:
 			}
 		m_perc_mutex.unlock();
 		
-		if(!new_flag) {
+		if(!new_flag && m_first_time) {
 			//no new data to process
+			
+			DEBUG_P("EXITING BECAUSE OF NO VALID INPUT",)
+			
 			return;
 		}
+		
+		if(!new_flag) {
+			DEBUG_P("No new input!",)
+		}
+		
+		m_first_time = false;
 		
 		//there's a new processed input
 		pteam_p2os::RobotControl rc_server;
