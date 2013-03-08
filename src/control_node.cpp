@@ -62,12 +62,12 @@ private:
 		return true;
 	}
 	
-	enum eGripperCmd {
-		eGCALZA = 1,
-		eGCABBASSA,
-		eGCFERMA,
-		eGCABBASSA_PALLA = 6
-	};
+// 	enum eGripperCmd {
+// 		eGCALZA = 1,
+// 		eGCABBASSA = 2,
+// 		eGCFERMA,
+// 		eGCABBASSA_PALLA = 6
+// 	};
 	
 public:
 	ControlNode(): m_nh("control_node") {
@@ -137,23 +137,28 @@ public:
 			}
 			
 			//gripper
-			if(m_last_request.gripper_move_set) {
-				gripper_driver::Messaggio gripper_srv;
-				
-				if(m_last_request.gripper_move_down) {
-					//move down
-					DEBUG_P("GRIPPER DOWN REQUEST", )
-					gripper_srv.request.cmd = (int)eGCABBASSA;
-				} else {
-					//move up
-					DEBUG_P("GRIPPER UP REQUEST", )
-					gripper_srv.request.cmd = (int)eGCALZA;
+			
+			try {
+				if(m_last_request.gripper_move_set) {
+					gripper_driver::Messaggio gripper_srv;
+					
+					if(m_last_request.gripper_move_down) {
+						//move down
+						DEBUG_P("GRIPPER DOWN REQUEST", )
+						// 						gripper_srv.request.cmd = (char)eGCABBASSA;
+						gripper_srv.request.cmd = 2;
+					} else {
+						//move up
+						DEBUG_P("GRIPPER UP REQUEST", )
+// 						gripper_srv.request.cmd = (char)eGCALZA;
+						gripper_srv.request.cmd = 1;
+					}
+					
+					if(!m_gripper_client.call(gripper_srv)) {
+						ROS_ERROR("Service call to the gripper driver failed!");
+					}
 				}
-				
-				if(!m_gripper_client.call(gripper_srv)) {
-					ROS_ERROR("Service call to the gripper driver failed!");
-				}
-			}
+			} catch(...) { DEBUG_P("Exception thrown from gripper driver",) }
 		}
 		
 		geometry_msgs::Twist control_input;
