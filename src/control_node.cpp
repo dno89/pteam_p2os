@@ -84,7 +84,7 @@ public:
 		ROS_INFO("Advertising topic %s",robot_control_topic.c_str()); 
 		m_rc_publisher = m_nh.advertise<geometry_msgs::Twist>(robot_control_topic, 1);
 		
-		m_gripper_client = m_nh.serviceClient<gripper_driver::Messaggio>("messaggio");
+		m_gripper_client = m_nh.serviceClient<gripper_driver::Messaggio>("/my_gripper/messaggio");
 		
 		//reset the command
 		m_controls.linear_speed = 0.0f;

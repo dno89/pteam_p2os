@@ -17,7 +17,7 @@
 #include <base/RANSAC.h>
 
 #ifndef NDEBUG
-#include <base/gnuplot_i.hpp>
+#include <base/gnuplot-iostream.h>
 #endif
 
 namespace pteam {
@@ -58,8 +58,8 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	const double m_accept_threshold2;	//sqared distance threshold to accept an observation
 	
 	////magic numbers
-	static int min_age_to_ghost() { return 4; }
-	static int min_age_to_confirm() { return 8; }
+	static int min_age_to_ghost() { return 0; }
+	static int min_age_to_confirm() { return 5; }
 	static int max_ghost_age() { return 10; }
 	
 	////detection
@@ -70,14 +70,21 @@ class TargetDetector : public CBehavior<pteam_p2os::Perception, pteam_p2os::Robo
 	////debug
 #ifndef	NDEBUG	
 #warning @ TargetDetector DRAWING ENABLED
-	GnuplotHL m_gp;
+	Gnuplot m_gp1;
 #endif
 	
 	////magic numbers
 	static int min_consensus() { return 10; }
 	static int max_RANSAC_iteration() { return 100; }
-	static double RANSAC_distance_threshold() { return 0.02; }
+	static double RANSAC_distance_threshold() {
+#ifdef ON_SIMULATION
+		return 0.1;
+#else
+		return 0.02; 
+#endif	//ON_SIMULATION
+	}
 	static double consensus_perc() { return 0.9; }
+	static double in_range_distance() { return 0.7; }
 public:
 	TargetDetector(double range_thr, double taget_radius, double target_radius_toll, double accpet_threshold);
 	virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );

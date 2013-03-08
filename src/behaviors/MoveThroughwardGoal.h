@@ -9,19 +9,29 @@
 #define MOVETOWARDTHEGOAL_H
 
 #include <base/CBehavior.h>
+#include <base/Common.h>
 #include <pteam_p2os/Perception.h>
 #include <pteam_p2os/RobotControl.h>
 
 namespace pteam {
 	
 class MoveThroughwardGoal : public CBehavior<pteam_p2os::Perception, pteam_p2os::RobotControlRequest> {
-   float m_threshold_angle;
+	//"in front" angle in rad
+   double m_threshold_angle;
    
    ////magic numbers
    static double affinity() { return 2.0; }
+   static double max_speed() { 
+#ifdef	TURBO_MODE
+		return 1.0;
+#else
+	   return .4;
+#endif
+	}
+   
    
 public:
-	MoveThroughwardGoal(float threshold_angle = 2.0);
+	MoveThroughwardGoal(float threshold_angle = DEG_TO_RAD(2.0));
 	virtual pteam_p2os::RobotControlRequest operator() ( const pteam_p2os::Perception& in, bool* subsume = 0 );
 	virtual ~MoveThroughwardGoal();
 };
