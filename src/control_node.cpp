@@ -54,10 +54,10 @@ private:
 		DEBUG_T(bool(req.gripper_move_set), )
 		DEBUG_T(req.behavior_name, )
 		
-		m_lr_mutex.lock();
+// 		m_lr_mutex.lock();
 			m_last_request = req;
 			m_new_flag = true;
-		m_lr_mutex.unlock();
+// 		m_lr_mutex.unlock();
 		
 		return true;
 	}
@@ -114,34 +114,34 @@ public:
 		pteam_p2os::RobotControlRequest last_request;
 		bool new_flag;
 		
-		m_lr_mutex.lock();
+// 		m_lr_mutex.lock();
 			last_request = m_last_request;
 			new_flag = m_new_flag;
 			//lower the flag
 			m_new_flag = false;
-		m_lr_mutex.unlock();
+// 		m_lr_mutex.unlock();
 		
-		if(new_flag) {
+		if(true) {
 			//DEBUG_T(m_last_request.behavior_name, )
 		  
 			//update the applied commands
 			//angular speed
-			if(m_last_request.angular_speed_set) {
-				//DEBUG_T(m_last_request.angular_speed, )
-				m_controls.angular_speed = m_last_request.angular_speed;
+			if(last_request.angular_speed_set) {
+				DEBUG_T(last_request.angular_speed, )
+				m_controls.angular_speed = last_request.angular_speed;
 			}
 			
 			//linear speed
-			if(m_last_request.linear_speed_set) {
-				//DEBUG_T(m_last_request.angular_speed, )
-				m_controls.linear_speed = m_last_request.linear_speed;
+			if(last_request.linear_speed_set) {
+				DEBUG_T(last_request.angular_speed, )
+				m_controls.linear_speed = last_request.linear_speed;
 			}
 			
 			//gripper
-			if(m_last_request.gripper_move_set) {
+			if(last_request.gripper_move_set) {
 				gripper_driver::Messaggio gripper_srv;
 				
-				if(m_last_request.gripper_move_down) {
+				if(last_request.gripper_move_down) {
 					//move down
 					DEBUG_P("GRIPPER DOWN REQUEST", )
 					gripper_srv.request.cmd = (int)eGCABBASSA;
