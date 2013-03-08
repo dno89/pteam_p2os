@@ -188,6 +188,7 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 					req.angular_speed = 0.0;
 					req.angular_speed_set = true;
 					
+					
 					//lower the gripper
 					req.gripper_move_set = true;
 					req.gripper_move_down = true;
@@ -197,8 +198,15 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 					m_state = eSWaitingDown;
 				}
 				break;
+				
 			case eSWaitingDown:
 				DEBUG_P("Waiting Down!",)
+				
+				//Stop the robott
+				req.angular_speed = 0.0;
+				req.angular_speed_set = true;
+				req.linear_speed = 0.0;
+				req.linear_speed_set = true;
 				
 				dt = t - m_start_time;
 				
@@ -206,6 +214,7 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 					m_state = eSMoveForwad;
 				}
 				break;
+				
 			case eSMoveForwad:
 				DEBUG_P("Move Forward",)
 				
@@ -230,6 +239,7 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 					m_state = eSWaitingUp;
 				}
 				break;
+				
 			case eSWaitingUp:
 				DEBUG_P("Waiting Up!",)
 				
@@ -256,6 +266,7 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 				}
 				
 				break;
+				
 			case eSWinning:
 				DEBUG_P("FUCK YEAHHHHH!!!!! WINNING!!!",)
 				
@@ -274,6 +285,7 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 		
 		req.behavior_name = "TakeTheBall";
 		
+		DEBUG_T(req.affinity,)
 		DEBUG_T(req.angular_speed,)
 		DEBUG_T(bool(req.angular_speed_set), )
 		DEBUG_T(req.linear_speed,)
