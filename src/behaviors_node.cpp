@@ -137,6 +137,13 @@ public:
 		//obtain a request
 		rc_server.request = m_behaviors_manager.RunBehaviors(perc_msg);
 		
+		DEBUG_T(rc_server.request.angular_speed,)
+		DEBUG_T(bool(rc_server.request.angular_speed_set), )
+		DEBUG_T(rc_server.request.linear_speed,)
+		DEBUG_T(bool(rc_server.request.linear_speed_set), )
+		DEBUG_T(bool(rc_server.request.gripper_move_down), )
+		DEBUG_T(bool(rc_server.request.gripper_move_set), )
+		
 		//submit the request to the server
 		if(!m_rc_client.call(rc_server)) {
 			ROS_ERROR("BehaviorsNode ERROR: invalid response from server!");
