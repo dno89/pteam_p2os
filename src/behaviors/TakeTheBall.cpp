@@ -205,16 +205,16 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 			case eSMoveForwad:
 				DEBUG_P("Move Forward",)
 				
-				tp = ReadProperty<Point2d>("TARGET_POSITION");
-				theta = atan2(tp.y, tp.x);
+// 				tp = ReadProperty<Point2d>("TARGET_POSITION");
+// 				theta = atan2(tp.y, tp.x);
 				
-				if(Lenght(tp) >= distance_ball()) {
+				if(nearest_scan(in, -angular_fov(), angular_fov()) >= distance_ball()) {
 					//angular speed
 					req.linear_speed = closing_speed()/**cos(theta)*/;
 					req.linear_speed_set = true;
 					
-					req.angular_speed = sin(theta);
-					req.angular_speed_set = true;
+// 					req.angular_speed = sin(theta);
+// 					req.angular_speed_set = true;
 				} else {
 					//lift the gripper
 					req.gripper_move_set = true;
@@ -276,6 +276,25 @@ pteam_p2os::RobotControlRequest TakeTheBall::operator()(const pteam_p2os::Percep
 	req.behavior_name = "TakeTheBall";
 	
 	return req;
+}
+
+double TakeTheBall::nearest_scan(const pteam_p2os::Perception& in, double angle_min, double angle_max) {
+	int imin = (angle_min - in.laser.data.angle_min)/in.laser.data.angle_increment;
+	int imax = (angle_max - in.laser.data.angle_min)/in.laser.data.angle_increment;
+	
+	double min_scan = std::numeric_limits<double>::max();
+	
+	for(int ii = imin; ii <= imax; ++ii) {
+		if(isnan(in.laser.data.ranges[ii])) {
+			continue;
+		}
+		
+		if(in.laser.data.ranges[ii] < min_scan) {
+			min_scan = in.laser.data.ranges[ii];
+		}
+	}
+	
+	return min_scan;
 }
 
 
